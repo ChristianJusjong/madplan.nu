@@ -4,6 +4,8 @@ import MealPlanGrid from "@/components/MealPlanGrid";
 import { generateWeeklyPlan } from "@/actions/generatePlan";
 import { revalidatePath } from "next/cache";
 
+export const dynamic = "force-dynamic";
+
 export default async function DashboardPage() {
     const userId = "demo-user-id";
 

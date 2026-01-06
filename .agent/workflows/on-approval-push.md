@@ -5,4 +5,4 @@ description: Push all current changes to the remote git repository.
 // turbo
 2. Commit changes with a descriptive message or a default one
 // turbo
-3. Push to the current branch
+3. Push to main branch
