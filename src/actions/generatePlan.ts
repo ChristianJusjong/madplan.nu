@@ -2,19 +2,13 @@
 
 import { Groq } from "groq-sdk";
 import { db } from "@/lib/db"; // Use alias from tsconfig
-import { addDays } from "date-fns"; // Standard date lib, need to assume installed or install it. Next.js often has it or simple dates work. Use native dates for now to reduce deps if not certain.
+import { addDays } from "date-fns";
+import { getWeeklyDeals } from "@/lib/deals";
 
 // Initialize Groq inside function to avoid build-time errors if env is missing
 // const groq = new Groq({ ... });
 
-async function getWeeklyDeals(): Promise<string> {
-  // Mock Data
-  return `
-    Netto Deals: Minced Beef 500g 30kr, Carrots 2kg 10kr, Eggs 10pcs 15kr, Chicken Breast 25kr.
-    Rema1000 Deals: Rice 1kg 12kr, Broccoli 8kr, Tuna cans 10kr, Oatmeal 1kg 10kr.
-    Bilka Deals: Salmon Fillet 125g 20kr, Spinach 400g 12kr.
-  `;
-}
+
 
 export async function generateWeeklyPlan(userId: string) {
   try {
