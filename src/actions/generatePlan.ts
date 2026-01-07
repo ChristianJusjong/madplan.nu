@@ -31,8 +31,13 @@ export async function generateWeeklyPlan(userId: string) {
       WEEKLY DEALS (Maximize usage of these to save money):
       ${weeklyDeals}
       
+      INSTRUCTIONS:
+      1. PRIORITIZE using ingredients from the Weekly Deals to keep costs low.
+      2. Ensure the plan meets the calorie goal (+/- 100 kcal).
+      3. Create a Shopping List that aggregates all ingredients.
+      
       OUTPUT FORMAT:
-      Strict JSON only. No other text. Structure:
+      Strict JSON only. No markdown, no regular text. Structure:
       {
         "days": [
           {
@@ -46,6 +51,9 @@ export async function generateWeeklyPlan(userId: string) {
               }
             ]
           }
+        ],
+        "shoppingList": [
+           { "item": "Egg", "amount": "7 pcs", "estimatedPrice": 15, "currency": "DKK" }
         ]
       }
     `;
@@ -58,7 +66,7 @@ export async function generateWeeklyPlan(userId: string) {
       messages: [
         {
           role: "system",
-          content: "You are a helpful nutritionist JSON generator. Ensure valid strict JSON output.",
+          content: "You are a helpful nutritionist JSON generator. Ensure valid strict JSON output. Do not wrap in markdown.",
         },
         {
           role: "user",
@@ -74,8 +82,15 @@ export async function generateWeeklyPlan(userId: string) {
       throw new Error("No content received from AI");
     }
 
-    // Parse JSON
-    const planData = JSON.parse(content);
+    // Parse JSON with cleanup
+    const cleanContent = cleanJsonResponse(content);
+    let planData;
+    try {
+      planData = JSON.parse(cleanContent);
+    } catch (e) {
+      console.error("Failed to parse JSON:", cleanContent);
+      throw new Error("Failed to parse AI response");
+    }
 
     // Save to DB
     const startDate = new Date();
@@ -97,4 +112,8 @@ export async function generateWeeklyPlan(userId: string) {
     console.error("Error generating meal plan:", error);
     return { success: false, error: "Failed to generate plan" };
   }
+}
+
+function cleanJsonResponse(response: string): string {
+  return response.replace(/```json/g, "").replace(/```/g, "").trim();
 }
