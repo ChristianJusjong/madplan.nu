@@ -20,14 +20,22 @@ export async function updateUserMetrics(formData: FormData) {
     const gender = formData.get("gender") as Gender;
     const activityLevel = formData.get("activityLevel") as ActivityLevel;
 
-    // Calculate new stats (Default to LOSE_WEIGHT until set in settings)
+    // Parse new fields
+    const goal = (formData.get("goal") as any) || "LOSE_WEIGHT";
+    const adults = parseInt((formData.get("adults") as string) || "1");
+    const children = parseInt((formData.get("children") as string) || "0");
+
+    // Calculate new stats
     const { bmr, dailyCalorieGoal } = calculateCalories(
         width,
         height,
         age,
         gender,
-        activityLevel
+        activityLevel,
+        goal
     );
+
+    const familyMembers = { adults, children };
 
     // Upsert user (create if not exists)
     await db.user.upsert({
@@ -41,6 +49,8 @@ export async function updateUserMetrics(formData: FormData) {
             bmr,
             dailyCalorieGoal,
             email: userEmail,
+            goal,
+            familyMembers
         },
         create: {
             id: userId,
@@ -52,6 +62,8 @@ export async function updateUserMetrics(formData: FormData) {
             bmr,
             dailyCalorieGoal,
             email: userEmail,
+            goal,
+            familyMembers
         },
     });
 
