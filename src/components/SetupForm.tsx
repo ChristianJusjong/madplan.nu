@@ -42,7 +42,7 @@ export default function SetupForm() {
                                     <User className="w-4 h-4 text-emerald-500" /> Gender
                                 </label>
                                 <select name="gender" required className="w-full bg-zinc-50 border border-zinc-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 outline-none transition-all appearance-none">
-                                    {Object.values(Gender).map((g) => (
+                                    {["MALE", "FEMALE"].map((g) => (
                                         <option key={g} value={g}>{g}</option>
                                     ))}
                                 </select>
@@ -61,7 +61,7 @@ export default function SetupForm() {
                                     <Activity className="w-4 h-4 text-emerald-500" /> Activity Level
                                 </label>
                                 <select name="activityLevel" required className="w-full bg-zinc-50 border border-zinc-200 rounded-xl px-4 py-3 focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 outline-none transition-all">
-                                    {Object.values(ActivityLevel).map((a) => (
+                                    {["SEDENTARY", "LIGHTLY_ACTIVE", "MODERATELY_ACTIVE", "VERY_ACTIVE", "EXTRA_ACTIVE"].map((a) => (
                                         <option key={a} value={a}>{a.replace(/_/g, " ")}</option>
                                     ))}
                                 </select>
