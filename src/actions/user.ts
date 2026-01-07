@@ -20,7 +20,7 @@ export async function updateUserMetrics(formData: FormData) {
     const gender = formData.get("gender") as Gender;
     const activityLevel = formData.get("activityLevel") as ActivityLevel;
 
-    // Calculate new stats
+    // Calculate new stats (Default to LOSE_WEIGHT until set in settings)
     const { bmr, dailyCalorieGoal } = calculateCalories(
         width,
         height,

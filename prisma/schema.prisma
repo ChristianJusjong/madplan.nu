@@ -25,6 +25,13 @@ enum ActivityLevel {
   EXTRA_ACTIVE
 }
 
+enum Goal {
+  LOSE_WEIGHT
+  MAINTAIN
+  GAIN_WEIGHT
+  BUILD_MUSCLE
+}
+
 model User {
   id        String   @id @default(uuid())
   createdAt DateTime @default(now())
@@ -37,6 +44,9 @@ model User {
   age       Int
   gender    Gender
   activityLevel ActivityLevel
+  
+  goal             Goal     @default(LOSE_WEIGHT)
+  familyMembers    Json?    // { adults: number, children: number }
   
   bmr              Float
   dailyCalorieGoal Float

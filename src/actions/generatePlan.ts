@@ -26,6 +26,8 @@ export async function generateWeeklyPlan() {
 
     const weeklyDeals = await getWeeklyDeals();
     const prefs = (user.preferences as any) || {};
+    const family = (user.familyMembers as any) || { adults: 1, children: 0 };
+    const totalPeople = family.adults + (family.children * 0.5); // Crude estimation for scaling
 
     let strategies = [];
     if (prefs.skipLunch) strategies.push("- WORK LUNCH: Do NOT plan Lunch for Monday-Friday (User eats at work). Distribute calories to Breakfast/Dinner.");
@@ -33,8 +35,9 @@ export async function generateWeeklyPlan() {
 
     // Construct Prompt
     const prompt = `
-      You are a Budget Dietician. Create a 7-day meal plan (3 meals per day) for a user with these stats:
-      - Daily Calorie Goal: ${user.dailyCalorieGoal} kcal
+      You are a Michelin-Star Budget Dietician. Create a 7-day meal plan (3 meals per day) for a user with these stats:
+      - Daily Calorie Goal: ${user.dailyCalorieGoal} kcal PER PERSON (Adult)
+      - Family Size: ${family.adults} Adults, ${family.children} Children.
       - Allergies/Preferences: None (Standard)
       
       WEEKLY DEALS (Maximize usage of these to save money):
@@ -44,14 +47,15 @@ export async function generateWeeklyPlan() {
       ${strategies.join("\n")}
       
       INSTRUCTIONS:
-      1. METRIC SYSTEM ONLY: Use grams (g), liters (l), pieces (pcs). NO cups/ounces.
-      2. ZERO FOOD WASTE: If you open an ingredient (e.g. Cauliflower), use the REST of it in another meal later in the week.
-      3. DEAL PRIORITY: Incorporate weekly deals aggressively.
-      4. SHOPPING LIST: Aggregate all ingredients.
+      1. INSPIRATION: Use exciting, gourmet, modern recipe names. Avoid generic terms. (e.g. instead of "Chicken Salad", say "Citrus-Glazed Chicken with Quinoa Tabbouleh").
+      2. FAMILY SCALING: The "meals" calories are per adult. But the **Shopping List** MUST BE SCALED for ${family.adults} Adults + ${family.children} Children.
+      3. METRIC SYSTEM ONLY: Use grams (g), liters (l), pieces (pcs). NO cups/ounces.
+      4. ZERO FOOD WASTE: If you open an ingredient (e.g. Cauliflower), use the REST of it in another meal later in the week.
+      5. DEAL PRIORITY: Incorporate weekly deals aggressively.
       
       OUTPUT FORMAT:
       Strict JSON only. No markdown. Structure:
-      {"days":[{"day":"Monday","meals":[{"type":"Breakfast","name":"Recipe Name (Source)","calories":500,"ingredients":["50g Oatmeal"]}]}],"shoppingList":[{"item":"Egg","amount":"7 pcs","estimatedPrice":15,"currency":"DKK"}]}
+      {"days":[{"day":"Monday","meals":[{"type":"Breakfast","name":"Recipe Name (Source)","calories":500,"ingredients":["50g Oatmeal"]}]}],"shoppingList":[{"item":"Egg","amount":"21 pcs","estimatedPrice":45,"currency":"DKK"}]}
     `;
 
     const groq = new Groq({

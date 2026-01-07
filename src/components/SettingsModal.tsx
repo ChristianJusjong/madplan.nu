@@ -1,16 +1,15 @@
 "use client";
 
 import { useState } from "react";
-import { Settings, X } from "lucide-react";
+import { Settings, X, Users, Target } from "lucide-react";
 import { updatePreferences } from "@/actions/settings";
+import { Goal, User } from "@prisma/client";
 
-type Preferences = {
-    skipLunch?: boolean;
-    leftovers?: boolean;
-};
-
-export default function SettingsModal({ initialPreferences }: { initialPreferences: Preferences }) {
+export default function SettingsModal({ user }: { user: User }) {
     const [isOpen, setIsOpen] = useState(false);
+    const prefs = (user.preferences as any) || {};
+    const family = (user.familyMembers as any) || { adults: 1, children: 0 };
+    const goals = Object.values(Goal);
 
     return (
         <>
@@ -24,8 +23,8 @@ export default function SettingsModal({ initialPreferences }: { initialPreferenc
 
             {isOpen && (
                 <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-                    <div className="bg-white rounded-xl shadow-2xl max-w-md w-full overflow-hidden">
-                        <div className="flex justify-between items-center p-4 border-b border-gray-100">
+                    <div className="bg-white rounded-xl shadow-2xl max-w-md w-full overflow-hidden max-h-[90vh] overflow-y-auto">
+                        <div className="flex justify-between items-center p-4 border-b border-gray-100 sticky top-0 bg-white z-10">
                             <h2 className="text-xl font-bold text-gray-900">Plan Settings</h2>
                             <button
                                 onClick={() => setIsOpen(false)}
@@ -36,15 +35,49 @@ export default function SettingsModal({ initialPreferences }: { initialPreferenc
                         </div>
 
                         <form action={updatePreferences} onSubmit={() => setTimeout(() => setIsOpen(false), 500)}>
-                            <div className="p-6 space-y-6">
+                            <div className="p-6 space-y-8">
+                                {/* GOAL SECTION */}
                                 <div className="space-y-4">
-                                    <h3 className="text-sm font-bold uppercase text-gray-400 tracking-wider">Schedule</h3>
+                                    <h3 className="text-sm font-bold uppercase text-emerald-600 tracking-wider flex items-center gap-2">
+                                        <Target className="w-4 h-4" /> Your Goal
+                                    </h3>
+                                    <div className="grid grid-cols-2 gap-3">
+                                        {goals.map((g) => (
+                                            <label key={g} className={`cursor-pointer border rounded-lg p-3 text-center transition-all ${user.goal === g ? 'bg-emerald-50 border-emerald-500 ring-1 ring-emerald-500' : 'hover:bg-gray-50'}`}>
+                                                <input type="radio" name="goal" value={g} defaultChecked={user.goal === g} className="sr-only" />
+                                                <span className="text-sm font-medium block">{g.replace(/_/g, " ")}</span>
+                                            </label>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                {/* FAMILY SECTION */}
+                                <div className="space-y-4">
+                                    <h3 className="text-sm font-bold uppercase text-emerald-600 tracking-wider flex items-center gap-2">
+                                        <Users className="w-4 h-4" /> Family
+                                    </h3>
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div>
+                                            <label className="block text-xs text-gray-500 mb-1">Adults</label>
+                                            <input name="adults" type="number" min="1" defaultValue={family.adults} className="w-full border rounded-md p-2" />
+                                        </div>
+                                        <div>
+                                            <label className="block text-xs text-gray-500 mb-1">Children</label>
+                                            <input name="children" type="number" min="0" defaultValue={family.children} className="w-full border rounded-md p-2" />
+                                        </div>
+                                    </div>
+                                    <p className="text-xs text-gray-400">Shopping list will scale for the whole family.</p>
+                                </div>
+
+                                {/* PREFERENCES SECTION */}
+                                <div className="space-y-4">
+                                    <h3 className="text-sm font-bold uppercase text-emerald-600 tracking-wider">Strategy</h3>
 
                                     <label className="flex items-center gap-3 p-3 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors">
                                         <input
                                             type="checkbox"
                                             name="skipLunch"
-                                            defaultChecked={initialPreferences?.skipLunch}
+                                            defaultChecked={prefs.skipLunch}
                                             className="w-5 h-5 text-emerald-600 rounded border-gray-300 focus:ring-emerald-500"
                                         />
                                         <div>
@@ -52,36 +85,28 @@ export default function SettingsModal({ initialPreferences }: { initialPreferenc
                                             <p className="text-xs text-gray-500">Skips Lunch entries (Mon-Fri)</p>
                                         </div>
                                     </label>
-                                </div>
-
-                                <div className="space-y-4">
-                                    <h3 className="text-sm font-bold uppercase text-gray-400 tracking-wider">Cooking Strategy</h3>
 
                                     <label className="flex items-center gap-3 p-3 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors">
                                         <input
                                             type="checkbox"
                                             name="leftovers"
-                                            defaultChecked={initialPreferences?.leftovers}
+                                            defaultChecked={prefs.leftovers}
                                             className="w-5 h-5 text-emerald-600 rounded border-gray-300 focus:ring-emerald-500"
                                         />
                                         <div>
                                             <p className="font-medium text-gray-900">Cook for Leftovers</p>
-                                            <p className="text-xs text-gray-500">Dinner portions ×2 for next day Lunch</p>
+                                            <p className="text-xs text-gray-500">Dinner ×2 for next day Lunch</p>
                                         </div>
                                     </label>
-                                </div>
-
-                                <div className="bg-blue-50 p-4 rounded-lg text-sm text-blue-800">
-                                    <p><strong>Note:</strong> All plans use the <strong>Metric System</strong> and optimize for <strong>Zero Food Waste</strong> by default.</p>
                                 </div>
                             </div>
 
                             <div className="p-4 bg-gray-50 border-t border-gray-100 flex justify-end">
                                 <button
                                     type="submit"
-                                    className="bg-emerald-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-emerald-700 transition shadow-sm"
+                                    className="bg-emerald-600 text-white px-6 py-2 rounded-lg font-medium hover:bg-emerald-700 transition shadow-sm"
                                 >
-                                    Save Settings
+                                    Save Changes
                                 </button>
                             </div>
                         </form>
