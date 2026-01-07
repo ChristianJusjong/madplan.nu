@@ -1,12 +1,15 @@
+```typescript
 "use client";
 
 import { Check, Coins, ChefHat } from "lucide-react";
+import Link from "next/link";
 
 type Meal = {
     type: string;
     name: string;
     calories: number;
     ingredients: string[];
+    recipeId?: string; // Added recipeId
 };
 
 type DayPlan = {
@@ -37,17 +40,30 @@ export default function MealPlanGrid({ planData }: { planData: any }) {
                             <div key={idx} className="flex flex-col border-b border-gray-100 last:border-0 pb-4 last:pb-0">
                                 <div className="flex justify-between items-start mb-1">
                                     <span className="text-[10px] font-bold uppercase text-gray-500 tracking-wider bg-gray-100 px-2 py-0.5 rounded-full">{meal.type}</span>
-                                    <span className="text-xs font-mono text-gray-400">{meal.calories} kcal</span>
+                                    <div className="font-semibold text-gray-900 group-hover:text-emerald-700 transition">
+                                        {meal.name}
+                                        {meal.recipeId && (
+                                            <Link 
+                                                href="/recipes" 
+                                                className="ml-2 inline-flex items-center text-xs bg-emerald-100 text-emerald-800 px-1.5 py-0.5 rounded border border-emerald-200 hover:bg-emerald-200"
+                                                title="Saved in Cookbook"
+                                            >
+                                                📖 Recipe
+                                            </Link>
+                                        )}
+                                    </div>
+                                    <span className="text-xs font-bold text-emerald-600 bg-emerald-50 px-2 py-1 rounded-full">
+                                        {meal.calories} kcal
+                                    </span>
                                 </div>
                                 <div className="mt-1">
-                                    <h4 className="font-semibold text-gray-900 leading-tight">{meal.name}</h4>
-
                                     <div className="flex flex-wrap gap-1 mt-2">
                                         {meal.ingredients.map((ing, i) => (
-                                            <span key={i} className={`text-[10px] px-1.5 py-0.5 rounded border ${deals.some(deal => ing.toLowerCase().includes(deal.toLowerCase()))
-                                                    ? "bg-yellow-50 text-yellow-700 border-yellow-200"
-                                                    : "bg-gray-50 text-gray-600 border-gray-100"
-                                                }`}>
+                                            <span key={i} className={`text - [10px] px - 1.5 py - 0.5 rounded border ${
+    deals.some(deal => ing.toLowerCase().includes(deal.toLowerCase()))
+    ? "bg-yellow-50 text-yellow-700 border-yellow-200"
+    : "bg-gray-50 text-gray-600 border-gray-100"
+} `}>
                                                 {ing}
                                             </span>
                                         ))}
@@ -64,3 +80,4 @@ export default function MealPlanGrid({ planData }: { planData: any }) {
         </div>
     );
 }
+```

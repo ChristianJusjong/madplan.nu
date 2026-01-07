@@ -29,6 +29,16 @@ export async function generateWeeklyPlan() {
     const family = (user.familyMembers as any) || { adults: 1, children: 0 };
     const totalPeople = family.adults + (family.children * 0.5); // Crude estimation for scaling
 
+    // Fetch user recipes
+    const recipes = await db.recipe.findMany({
+      where: { userId },
+      select: { id: true, title: true, tags: true }
+    });
+
+    const cookbookContext = recipes.length > 0
+      ? `USER COOKBOOK (Prioritize these! Use at least 2-3 if relevant): \n${recipes.map(r => `- ${r.title} (ID: ${r.id}) [${r.tags.join(",")}]`).join("\n")}`
+      : "Cookbook is empty.";
+
     let strategies = [];
     if (prefs.skipLunch) strategies.push("- WORK LUNCH: Do NOT plan Lunch for Monday-Friday (User eats at work). Distribute calories to Breakfast/Dinner.");
     if (prefs.leftovers) strategies.push("- LEFTOVERS: Cook double portions for Dinner. Serve the PREVIOUS night's dinner as the next day's Lunch (e.g. Mon Dinner -> Tue Lunch).");
@@ -38,24 +48,25 @@ export async function generateWeeklyPlan() {
       You are a Michelin-Star Budget Dietician. Create a 7-day meal plan (3 meals per day) for a user with these stats:
       - Daily Calorie Goal: ${user.dailyCalorieGoal} kcal PER PERSON (Adult)
       - Family Size: ${family.adults} Adults, ${family.children} Children.
-      - Allergies/Preferences: None (Standard)
       
       WEEKLY DEALS (Maximize usage of these to save money):
       ${weeklyDeals}
+      
+      ${cookbookContext}
       
       PLANNING STRATEGIES:
       ${strategies.join("\n")}
       
       INSTRUCTIONS:
-      1. INSPIRATION: Use exciting, gourmet, modern recipe names. Avoid generic terms. (e.g. instead of "Chicken Salad", say "Citrus-Glazed Chicken with Quinoa Tabbouleh").
-      2. FAMILY SCALING: The "meals" calories are per adult. But the **Shopping List** MUST BE SCALED for ${family.adults} Adults + ${family.children} Children.
-      3. METRIC SYSTEM ONLY: Use grams (g), liters (l), pieces (pcs). NO cups/ounces.
-      4. ZERO FOOD WASTE: If you open an ingredient (e.g. Cauliflower), use the REST of it in another meal later in the week.
-      5. DEAL PRIORITY: Incorporate weekly deals aggressively.
+      1. INSPIRATION: Use exciting, gourmet, modern recipe names.
+      2. USE COOKBOOK: If you use a recipe from the USER COOKBOOK, you MUST include its "recipeId" in the meal object.
+      3. FAMILY SCALING: The "meals" calories are per adult. But the **Shopping List** MUST BE SCALED for ${family.adults} Adults + ${family.children} Children.
+      4. METRIC SYSTEM ONLY: Use grams (g), liters (l), pieces (pcs).
+      5. ZERO FOOD WASTE: Reuse ingredients across the week.
       
       OUTPUT FORMAT:
       Strict JSON only. No markdown. Structure:
-      {"days":[{"day":"Monday","meals":[{"type":"Breakfast","name":"Recipe Name (Source)","calories":500,"ingredients":["50g Oatmeal"]}]}],"shoppingList":[{"item":"Egg","amount":"21 pcs","estimatedPrice":45,"currency":"DKK"}]}
+      {"days":[{"day":"Monday","meals":[{"type":"Breakfast","name":"Recipe Name","recipeId":"OPTIONAL_UUID","calories":500,"ingredients":["50g Oatmeal"]}]}],"shoppingList":[{"item":"Egg","amount":"21 pcs","estimatedPrice":45,"currency":"DKK"}]}
     `;
 
     const groq = new Groq({
