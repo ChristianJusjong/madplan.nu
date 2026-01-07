@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { Check, Copy, Plus, Trash2 } from "lucide-react";
 
-type Item = {
+type ShoppingListItem = {
     item: string;
     amount: string;
     estimatedPrice?: number;
@@ -12,9 +12,14 @@ type Item = {
     id?: string;
 };
 
-export default function ShoppingList({ items, planId }: { items: Item[], planId?: string }) {
+type ShoppingListGroup = {
+    store: string;
+    items: ShoppingListItem[];
+};
+
+export default function ShoppingList({ groups, planId }: { groups: ShoppingListGroup[], planId?: string }) {
     const [checked, setChecked] = useState<Record<string, boolean>>({});
-    const [extras, setExtras] = useState<Item[]>([]);
+    const [extras, setExtras] = useState<ShoppingListItem[]>([]);
     const [newItem, setNewItem] = useState("");
 
     // Load state from local storage
@@ -41,7 +46,7 @@ export default function ShoppingList({ items, planId }: { items: Item[], planId?
         e.preventDefault();
         if (!newItem.trim()) return;
 
-        const item: Item = {
+        const item: ShoppingListItem = {
             item: newItem,
             amount: "-",
             isManual: true,
@@ -59,18 +64,38 @@ export default function ShoppingList({ items, planId }: { items: Item[], planId?
         setChecked(newChecked);
     };
 
-    const allItems = [...items.map((i, idx) => ({ ...i, id: `generated-${idx}` })), ...extras];
+    // Flatten for calculations and clipboard, but keep structure for render
+    // We treat "extras" as a group "Your Extras"
+
+    // Ensure groups is an array (handle legacy data if necessary)
+    const storeGroups = Array.isArray(groups) && groups.length > 0 && 'store' in groups[0]
+        ? groups
+        : [{ store: "General", items: (groups as any) || [] }]; // Fallback for old plans
 
     const copyToClipboard = () => {
-        const text = allItems
-            .filter(i => !checked[i.id!])
-            .map(i => `- ${i.amount} ${i.item}`)
-            .join("\n");
-        navigator.clipboard.writeText(text);
+        let text = "";
+
+        storeGroups.forEach(group => {
+            const uncheckedItems = group.items.map((_, idx) => ({ ..._, id: `${group.store}-${idx}` })).filter(i => !checked[i.id!]);
+            if (uncheckedItems.length > 0) {
+                text += `\n[${group.store}]\n`;
+                uncheckedItems.forEach(i => text += `- ${i.amount} ${i.item}\n`);
+            }
+        });
+
+        const uncheckedExtras = extras.filter(i => !checked[i.id!]);
+        if (uncheckedExtras.length > 0) {
+            text += `\n[Extras]\n`;
+            uncheckedExtras.forEach(i => text += `- ${i.item}\n`);
+        }
+
+        navigator.clipboard.writeText(text.trim());
         alert("Shopping list copied!");
     };
 
-    const totalEstimated = items.reduce((acc, i) => acc + (i.estimatedPrice || 0), 0);
+    const totalEstimated = storeGroups.reduce((acc, group) => {
+        return acc + group.items.reduce((gAcc, i) => gAcc + (i.estimatedPrice || 0), 0);
+    }, 0);
 
     return (
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6 sticky top-8">
@@ -85,38 +110,71 @@ export default function ShoppingList({ items, planId }: { items: Item[], planId?
                 </button>
             </div>
 
-            <div className="space-y-4 mb-6 max-h-[60vh] overflow-y-auto">
-                {/* Generated Items */}
-                <div className="space-y-2">
-                    {allItems.map((item) => (
-                        <div
-                            key={item.id}
-                            onClick={() => toggleCheck(item.id!)}
-                            className={`flex justify-between items-center p-2 rounded-lg cursor-pointer transition-all ${checked[item.id!] ? "bg-gray-50 opacity-50" : "hover:bg-gray-50"
-                                }`}
-                        >
-                            <div className="flex items-center gap-3">
-                                <div className={`w-5 h-5 rounded border flex items-center justify-center transition-colors ${checked[item.id!] ? "bg-emerald-500 border-emerald-500 text-white" : "border-gray-300"
-                                    }`}>
-                                    {checked[item.id!] && <Check className="w-3 h-3" />}
-                                </div>
-                                <div>
-                                    <p className={`text-sm font-medium ${checked[item.id!] ? "line-through text-gray-400" : "text-gray-700"}`}>
-                                        {item.item}
-                                    </p>
-                                    <p className="text-xs text-gray-400">{item.amount}</p>
-                                </div>
-                            </div>
-                            {item.isManual ? (
-                                <button onClick={(e) => { e.stopPropagation(); removeExtra(item.id!); }} className="text-gray-300 hover:text-red-500">
-                                    <Trash2 className="w-4 h-4" />
-                                </button>
-                            ) : (
-                                item.estimatedPrice && <span className="text-xs font-medium text-gray-400">{item.estimatedPrice} kr</span>
-                            )}
+            <div className="space-y-6 mb-6 max-h-[60vh] overflow-y-auto">
+                {storeGroups.map((group, gIdx) => (
+                    <div key={gIdx}>
+                        <h4 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">{group.store}</h4>
+                        <div className="space-y-2">
+                            {group.items.map((item, idx) => {
+                                const id = `${group.store}-${idx}`; // Stable ID based on position/store
+                                return (
+                                    <div
+                                        key={id}
+                                        onClick={() => toggleCheck(id)}
+                                        className={`flex justify-between items-center p-2 rounded-lg cursor-pointer transition-all ${checked[id] ? "bg-gray-50 opacity-50" : "hover:bg-gray-50"
+                                            }`}
+                                    >
+                                        <div className="flex items-center gap-3">
+                                            <div className={`w-5 h-5 rounded border flex items-center justify-center transition-colors ${checked[id] ? "bg-emerald-500 border-emerald-500 text-white" : "border-gray-300"
+                                                }`}>
+                                                {checked[id] && <Check className="w-3 h-3" />}
+                                            </div>
+                                            <div>
+                                                <p className={`text-sm font-medium ${checked[id] ? "line-through text-gray-400" : "text-gray-700"}`}>
+                                                    {item.item}
+                                                </p>
+                                                <p className="text-xs text-gray-400">{item.amount}</p>
+                                            </div>
+                                        </div>
+                                        {item.estimatedPrice && <span className="text-xs font-medium text-gray-400">{item.estimatedPrice} kr</span>}
+                                    </div>
+                                );
+                            })}
                         </div>
-                    ))}
-                </div>
+                    </div>
+                ))}
+
+                {/* Extras Section */}
+                {extras.length > 0 && (
+                    <div>
+                        <h4 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Extras</h4>
+                        <div className="space-y-2">
+                            {extras.map((item) => (
+                                <div
+                                    key={item.id}
+                                    onClick={() => toggleCheck(item.id!)}
+                                    className={`flex justify-between items-center p-2 rounded-lg cursor-pointer transition-all ${checked[item.id!] ? "bg-gray-50 opacity-50" : "hover:bg-gray-50"
+                                        }`}
+                                >
+                                    <div className="flex items-center gap-3">
+                                        <div className={`w-5 h-5 rounded border flex items-center justify-center transition-colors ${checked[item.id!] ? "bg-emerald-500 border-emerald-500 text-white" : "border-gray-300"
+                                            }`}>
+                                            {checked[item.id!] && <Check className="w-3 h-3" />}
+                                        </div>
+                                        <div>
+                                            <p className={`text-sm font-medium ${checked[item.id!] ? "line-through text-gray-400" : "text-gray-700"}`}>
+                                                {item.item}
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <button onClick={(e) => { e.stopPropagation(); removeExtra(item.id!); }} className="text-gray-300 hover:text-red-500">
+                                        <Trash2 className="w-4 h-4" />
+                                    </button>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                )}
             </div>
 
             {/* Total */}
