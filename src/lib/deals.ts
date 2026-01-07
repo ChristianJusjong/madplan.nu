@@ -83,10 +83,10 @@ function formatDealsForPrompt(deals: Deal[]): string {
 
     let output = "";
     for (const [store, storeDeals] of Object.entries(dealsByStore)) {
-        output += `${store} Deals:\n`;
-        // Limit to top 10 deals per store to save tokens
-        storeDeals.slice(0, 10).forEach(deal => {
-            output += `- ${deal.description} (${deal.brand}): ${deal.price} ${deal.currency}\n`;
+        output += `${store}:\n`;
+        // Limit to top 15 deals per store (increased from 10 due to smaller format)
+        storeDeals.slice(0, 15).forEach(deal => {
+            output += `-${deal.description}:${deal.price}\n`;
         });
         output += "\n";
     }

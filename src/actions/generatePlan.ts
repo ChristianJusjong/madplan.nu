@@ -41,25 +41,8 @@ export async function generateWeeklyPlan() {
       3. Create a Shopping List that aggregates all ingredients.
       
       OUTPUT FORMAT:
-      Strict JSON only. No markdown, no regular text. Structure:
-      {
-        "days": [
-          {
-            "day": "Monday",
-            "meals": [
-              {
-                "type": "Breakfast",
-                "name": "Recipe Name",
-                "calories": 500,
-                "ingredients": ["Egg", "Oatmeal"]
-              }
-            ]
-          }
-        ],
-        "shoppingList": [
-           { "item": "Egg", "amount": "7 pcs", "estimatedPrice": 15, "currency": "DKK" }
-        ]
-      }
+      Strict JSON only. No markdown. Structure:
+      {"days":[{"day":"Monday","meals":[{"type":"Breakfast","name":"Recipe Name","calories":500,"ingredients":["Egg"]}]}],"shoppingList":[{"item":"Egg","amount":"7 pcs","estimatedPrice":15,"currency":"DKK"}]}
     `;
 
     const groq = new Groq({
