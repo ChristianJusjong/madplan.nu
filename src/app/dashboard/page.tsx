@@ -68,7 +68,7 @@ export default async function DashboardPage() {
                 <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8">
                     {/* Main Content: Meal Plan */}
                     <div className="lg:col-span-2">
-                        <MealPlanGrid planData={planData} />
+                        <MealPlanGrid planData={planData} planId={mealPlan.id} />
                     </div>
 
                     {/* Sidebar: Shopping List */}

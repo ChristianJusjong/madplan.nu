@@ -30,10 +30,15 @@ export async function generateWeeklyPlan() {
     const totalPeople = family.adults + (family.children * 0.5); // Crude estimation for scaling
 
     // Fetch user recipes
-    const recipes = await db.recipe.findMany({
+    const allRecipes = await db.recipe.findMany({
       where: { userId },
       select: { id: true, title: true, tags: true }
     });
+
+    // Select random subset to avoid token limits
+    const recipes = allRecipes
+      .sort(() => 0.5 - Math.random())
+      .slice(0, 30);
 
     const cookbookContext = recipes.length > 0
       ? `USER COOKBOOK (Prioritize these! Use at least 2-3 if relevant): \n${recipes.map(r => `- ${r.title} (ID: ${r.id}) [${r.tags.join(",")}]`).join("\n")}`
