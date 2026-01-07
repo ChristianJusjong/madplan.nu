@@ -1,100 +1,125 @@
 import { getRecipes, deleteRecipe, importRecipeFromUrl } from "@/actions/recipes";
 import Link from "next/link";
-import { ArrowLeft, Trash2, Link as LinkIcon, Plus, Loader2 } from "lucide-react";
+import { ArrowLeft, Trash2, Link as LinkIcon, Plus, Loader2, Utensils, Clock, Users } from "lucide-react";
 
 export default async function RecipesPage() {
     const recipes = await getRecipes();
 
     return (
-        <div className="min-h-screen bg-gray-50 p-4 lg:p-8">
-            <div className="max-w-4xl mx-auto">
-                <header className="mb-8 flex justify-between items-center">
+        <div className="min-h-screen bg-zinc-50 font-sans">
+            {/* Header */}
+            <header className="bg-white border-b border-zinc-100 sticky top-0 z-10">
+                <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
                     <div className="flex items-center gap-4">
-                        <Link href="/dashboard" className="p-2 bg-white rounded-full shadow hover:bg-gray-50">
-                            <ArrowLeft className="w-5 h-5 text-gray-600" />
+                        <Link href="/dashboard" className="p-2 text-zinc-400 hover:text-zinc-900 hover:bg-zinc-50 rounded-full transition-colors">
+                            <ArrowLeft className="w-5 h-5" />
                         </Link>
-                        <h1 className="text-3xl font-bold text-gray-900">My Cookbook 📖</h1>
+                        <h1 className="text-xl font-bold text-zinc-900">My Cookbook</h1>
+                        <span className="bg-zinc-100 text-zinc-500 text-xs font-bold px-2 py-1 rounded-full">{recipes.length}</span>
                     </div>
-                </header>
+                </div>
+            </header>
 
-                {/* IMPORT FORM */}
-                <div className="bg-white p-6 rounded-xl shadow-sm mb-8">
-                    <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
-                        <Plus className="w-5 h-5 text-emerald-600" /> Import New Recipe
-                    </h2>
-                    <form action={async (formData) => {
-                        "use server";
-                        await importRecipeFromUrl(formData.get("url") as string);
-                    }} className="flex gap-2">
-                        <input
-                            name="url"
-                            type="url"
-                            placeholder="Paste URL (e.g. from valdemarsro.dk)"
-                            className="flex-1 border rounded-lg px-4 py-2 focus:ring-2 focus:ring-emerald-500 outline-none"
-                            required
-                        />
-                        <button type="submit" className="bg-emerald-600 text-white px-6 py-2 rounded-lg font-medium hover:bg-emerald-700 transition">
-                            Import
-                        </button>
-                    </form>
-                    <p className="text-xs text-gray-400 mt-2">
-                        Supported: Most recipe sites. The AI will extract ingredients and steps automatically.
-                    </p>
+            <div className="max-w-7xl mx-auto px-6 py-8">
+
+                {/* Import Hero */}
+                <div className="bg-white rounded-3xl border border-zinc-200 p-1 bg-gradient-to-br from-emerald-500/5 via-white to-white mb-10">
+                    <div className="p-8">
+                        <h2 className="text-2xl font-bold text-zinc-900 mb-2">Grow your collection</h2>
+                        <p className="text-zinc-500 mb-6">Paste a URL from Valdemarsro, Arla, or any recipe site. We'll extract it.</p>
+
+                        <form action={async (formData) => {
+                            "use server";
+                            await importRecipeFromUrl(formData.get("url") as string);
+                        }} className="relative max-w-xl">
+                            <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none">
+                                <LinkIcon className="w-5 h-5 text-zinc-400" />
+                            </div>
+                            <input
+                                name="url"
+                                type="url"
+                                placeholder="https://..."
+                                className="w-full pl-12 pr-32 py-4 bg-white border border-zinc-200 rounded-2xl text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500 transition-all shadow-sm"
+                                required
+                            />
+                            <button type="submit" className="absolute right-2 top-2 bottom-2 bg-zinc-900 text-white px-6 rounded-xl font-medium hover:bg-zinc-800 transition-colors flex items-center gap-2">
+                                <Plus className="w-4 h-4" /> Import
+                            </button>
+                        </form>
+                    </div>
                 </div>
 
-                {/* RECIPE LIST */}
-                <div className="grid gap-4">
-                    {recipes.map((recipe) => (
-                        <div key={recipe.id} className="bg-white p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow group">
-                            <div className="flex justify-between items-start">
-                                <div>
-                                    <h3 className="text-xl font-bold text-gray-900 mb-1">{recipe.title}</h3>
-                                    <div className="flex gap-3 text-sm text-gray-500 mb-3">
-                                        <span>⏱️ {recipe.prepTime || "?"}m prep</span>
-                                        <span>🍳 {recipe.cookTime || "?"}m cook</span>
-                                        <span>👥 {recipe.servings} servings</span>
+                {/* Grid */}
+                {recipes.length > 0 ? (
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {recipes.map((recipe) => (
+                            <div key={recipe.id} className="bg-white rounded-2xl border border-zinc-100 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all group overflow-hidden flex flex-col h-full">
+                                <div className="p-6 flex-1">
+                                    <div className="flex items-start justify-between gap-4 mb-3">
+                                        <h3 className="text-lg font-bold text-zinc-900 leading-tight group-hover:text-emerald-700 transition-colors">
+                                            {recipe.title}
+                                        </h3>
+                                        <form action={async () => {
+                                            "use server";
+                                            await deleteRecipe(recipe.id);
+                                        }}>
+                                            <button className="text-zinc-300 hover:text-red-500 transition-colors">
+                                                <Trash2 className="w-4 h-4" />
+                                            </button>
+                                        </form>
                                     </div>
-                                    <div className="flex gap-2 flex-wrap mb-4">
-                                        {recipe.tags.map(tag => (
-                                            <span key={tag} className="px-2 py-1 bg-gray-100 rounded-md text-xs font-medium text-gray-600">
+
+                                    <div className="flex flex-wrap gap-2 mb-4">
+                                        {recipe.tags.slice(0, 3).map(tag => (
+                                            <span key={tag} className="px-2 py-1 bg-zinc-50 border border-zinc-100 rounded-md text-[10px] font-bold tracking-wider text-zinc-500 uppercase">
                                                 {tag}
                                             </span>
                                         ))}
                                     </div>
+
+                                    <div className="grid grid-cols-3 gap-2 py-3 border-t border-b border-zinc-50 mb-4">
+                                        <div className="flex flex-col items-center">
+                                            <Clock className="w-4 h-4 text-zinc-400 mb-1" />
+                                            <span className="text-xs font-semibold text-zinc-700">{recipe.prepTime || "-"}m</span>
+                                        </div>
+                                        <div className="flex flex-col items-center border-l border-zinc-50">
+                                            <Utensils className="w-4 h-4 text-zinc-400 mb-1" />
+                                            <span className="text-xs font-semibold text-zinc-700">{recipe.cookTime || "-"}m</span>
+                                        </div>
+                                        <div className="flex flex-col items-center border-l border-zinc-50">
+                                            <Users className="w-4 h-4 text-zinc-400 mb-1" />
+                                            <span className="text-xs font-semibold text-zinc-700">{recipe.servings}</span>
+                                        </div>
+                                    </div>
+
+                                    <div className="space-y-1">
+                                        {(recipe.instructions as any[]).slice(0, 2).map((step, i) => (
+                                            <p key={i} className="text-sm text-zinc-500 line-clamp-1 pl-3 border-l-2 border-zinc-100">
+                                                {step}
+                                            </p>
+                                        ))}
+                                    </div>
                                 </div>
-                                <form action={async () => {
-                                    "use server";
-                                    await deleteRecipe(recipe.id);
-                                }}>
-                                    <button className="text-gray-300 hover:text-red-500 p-2">
-                                        <Trash2 className="w-5 h-5" />
-                                    </button>
-                                </form>
+
+                                {recipe.sourceUrl && (
+                                    <div className="bg-zinc-50 px-6 py-3 border-t border-zinc-100 flex justify-between items-center bg-zinc-50/50">
+                                        <a href={recipe.sourceUrl} target="_blank" className="text-xs font-medium text-emerald-600 hover:text-emerald-700 flex items-center gap-1.5">
+                                            <LinkIcon className="w-3 h-3" /> Source
+                                        </a>
+                                    </div>
+                                )}
                             </div>
-
-                            {/* PREVIEW */}
-                            <div className="bg-gray-50 p-4 rounded-lg text-sm text-gray-700 space-y-2">
-                                <p className="font-semibold text-gray-900">Instructions Preview:</p>
-                                {(recipe.instructions as any[]).slice(0, 2).map((step, i) => (
-                                    <p key={i} className="line-clamp-1 text-gray-600">• {step}</p>
-                                ))}
-                                {(recipe.instructions as any[]).length > 2 && <p className="text-xs text-gray-400">...and {(recipe.instructions as any[]).length - 2} more steps</p>}
-                            </div>
-
-                            {recipe.sourceUrl && (
-                                <a href={recipe.sourceUrl} target="_blank" className="inline-flex items-center gap-1 text-sm text-blue-500 hover:underline mt-4">
-                                    <LinkIcon className="w-3 h-3" /> Original Source
-                                </a>
-                            )}
+                        ))}
+                    </div>
+                ) : (
+                    <div className="text-center py-20 bg-white rounded-3xl border border-dashed border-zinc-200">
+                        <div className="w-16 h-16 bg-zinc-50 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <Utensils className="w-6 h-6 text-zinc-300" />
                         </div>
-                    ))}
-
-                    {recipes.length === 0 && (
-                        <div className="text-center py-12 text-gray-400">
-                            Book is empty. Paste a URL to start!
-                        </div>
-                    )}
-                </div>
+                        <h3 className="text-lg font-medium text-zinc-900">Your cookbook is empty</h3>
+                        <p className="text-zinc-500 max-w-xs mx-auto mt-1">Paste a URL above to add your first recipe.</p>
+                    </div>
+                )}
             </div>
         </div>
     );
