@@ -53,7 +53,7 @@ export default function MealPlanGrid({ planData, planId }: { planData: any, plan
                         <div className="px-8 py-6 bg-white border-b border-zinc-50 flex justify-between items-end">
                             <div>
                                 <h3 className="text-2xl font-bold tracking-tight text-zinc-900">{day.day}</h3>
-                                <p className="text-zinc-500 font-medium text-sm mt-1">Daily Target: {dayCalories} kcal</p>
+                                <p className="text-zinc-500 font-medium text-sm mt-1">Dagligt Mål: {dayCalories} kcal</p>
                             </div>
                             <div className="h-2 w-24 bg-zinc-100 rounded-full overflow-hidden">
                                 <div
@@ -83,14 +83,14 @@ export default function MealPlanGrid({ planData, planId }: { planData: any, plan
                                                             className="flex items-center gap-1 text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-1 rounded-md hover:bg-emerald-100 transition-colors"
                                                         >
                                                             <ChefHat className="w-3 h-3" />
-                                                            <span>COOKBOOK</span>
+                                                            <span>OPSKRIFT</span>
                                                         </Link>
                                                     )}
                                                 </div>
 
                                                 <div className="flex items-center gap-3">
                                                     <h4 className={`text-lg font-semibold text-zinc-900 leading-tight group-hover:text-emerald-700 transition ${isLoading ? "opacity-50" : ""}`}>
-                                                        {isLoading ? "Finding new delicious meal..." : meal.name}
+                                                        {isLoading ? "Finder nyt lækkert måltid..." : meal.name}
                                                     </h4>
                                                 </div>
 
@@ -125,7 +125,7 @@ export default function MealPlanGrid({ planData, planId }: { planData: any, plan
                                                     onClick={() => handleRegenerate(i, j)}
                                                     disabled={!!loading}
                                                     className={`p-2 rounded-full border border-zinc-200 bg-white hover:border-emerald-200 hover:text-emerald-600 hover:shadow-sm transition-all ${isLoading ? "animate-spin text-emerald-500 border-emerald-200" : "text-zinc-400"}`}
-                                                    title="Swap this meal"
+                                                    title="Erstat måltid"
                                                 >
                                                     <RefreshCw className="w-4 h-4" />
                                                 </button>

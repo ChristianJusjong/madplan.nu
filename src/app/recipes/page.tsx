@@ -14,7 +14,7 @@ export default async function RecipesPage() {
                         <Link href="/dashboard" className="p-2 text-zinc-400 hover:text-zinc-900 hover:bg-zinc-50 rounded-full transition-colors">
                             <ArrowLeft className="w-5 h-5" />
                         </Link>
-                        <h1 className="text-xl font-bold text-zinc-900">My Cookbook</h1>
+                        <h1 className="text-xl font-bold text-zinc-900">Min Kogebog</h1>
                         <span className="bg-zinc-100 text-zinc-500 text-xs font-bold px-2 py-1 rounded-full">{recipes.length}</span>
                     </div>
                 </div>
@@ -25,8 +25,8 @@ export default async function RecipesPage() {
                 {/* Import Hero */}
                 <div className="bg-white rounded-3xl border border-zinc-200 p-1 bg-gradient-to-br from-emerald-500/5 via-white to-white mb-10">
                     <div className="p-8">
-                        <h2 className="text-2xl font-bold text-zinc-900 mb-2">Grow your collection</h2>
-                        <p className="text-zinc-500 mb-6">Paste a URL from Valdemarsro, Arla, or any recipe site. We'll extract it.</p>
+                        <h2 className="text-2xl font-bold text-zinc-900 mb-2">Udvid din samling</h2>
+                        <p className="text-zinc-500 mb-6">Indsæt et link fra Valdemarsro, Arla eller en hvilken som helst opskriftsside. Vi henter den for dig.</p>
 
                         <form action={async (formData) => {
                             "use server";
@@ -43,7 +43,7 @@ export default async function RecipesPage() {
                                 required
                             />
                             <button type="submit" className="absolute right-2 top-2 bottom-2 bg-zinc-900 text-white px-6 rounded-xl font-medium hover:bg-zinc-800 transition-colors flex items-center gap-2">
-                                <Plus className="w-4 h-4" /> Import
+                                <Plus className="w-4 h-4" /> Importer
                             </button>
                         </form>
                     </div>
@@ -104,7 +104,7 @@ export default async function RecipesPage() {
                                 {recipe.sourceUrl && (
                                     <div className="bg-zinc-50 px-6 py-3 border-t border-zinc-100 flex justify-between items-center bg-zinc-50/50">
                                         <a href={recipe.sourceUrl} target="_blank" className="text-xs font-medium text-emerald-600 hover:text-emerald-700 flex items-center gap-1.5">
-                                            <LinkIcon className="w-3 h-3" /> Source
+                                            <LinkIcon className="w-3 h-3" /> Kilde
                                         </a>
                                     </div>
                                 )}
@@ -116,8 +116,8 @@ export default async function RecipesPage() {
                         <div className="w-16 h-16 bg-zinc-50 rounded-full flex items-center justify-center mx-auto mb-4">
                             <Utensils className="w-6 h-6 text-zinc-300" />
                         </div>
-                        <h3 className="text-lg font-medium text-zinc-900">Your cookbook is empty</h3>
-                        <p className="text-zinc-500 max-w-xs mx-auto mt-1">Paste a URL above to add your first recipe.</p>
+                        <h3 className="text-lg font-medium text-zinc-900">Din kogebog er tom</h3>
+                        <p className="text-zinc-500 max-w-xs mx-auto mt-1">Indsæt et link ovenfor for at tilføje din første opskrift.</p>
                     </div>
                 )}
             </div>

@@ -76,13 +76,13 @@ export default function ShoppingList({ items, planId }: { items: Item[], planId?
         <div className="bg-white rounded-3xl shadow-sm border border-zinc-100 p-6 sticky top-8">
             <div className="flex justify-between items-center mb-6">
                 <div>
-                    <h3 className="font-bold text-xl text-zinc-900">Shopping List</h3>
-                    <p className="text-xs text-zinc-500 font-medium mt-1">Organized by store</p>
+                    <h3 className="font-bold text-xl text-zinc-900">Indkøbsliste</h3>
+                    <p className="text-xs text-zinc-500 font-medium mt-1">Sorteret efter butik</p>
                 </div>
                 <button
                     onClick={copyToClipboard}
                     className="text-zinc-400 hover:text-emerald-600 hover:bg-emerald-50 p-2 rounded-xl transition-all"
-                    title="Copy unchecked items"
+                    title="Kopier umarkerede varer"
                 >
                     <Copy className="w-5 h-5" />
                 </button>
@@ -131,7 +131,7 @@ export default function ShoppingList({ items, planId }: { items: Item[], planId?
 
             {/* Total */}
             <div className="flex justify-between items-center pt-6 border-t border-zinc-100 mb-6">
-                <p className="text-sm font-medium text-zinc-500">Est. Total</p>
+                <p className="text-sm font-medium text-zinc-500">Est. I alt</p>
                 <p className="text-xl font-bold text-zinc-900 tracking-tight">{totalEstimated} DKK</p>
             </div>
 
@@ -141,7 +141,7 @@ export default function ShoppingList({ items, planId }: { items: Item[], planId?
                     type="text"
                     value={newItem}
                     onChange={(e) => setNewItem(e.target.value)}
-                    placeholder="Add extra item..."
+                    placeholder="Tilføj vare..."
                     className="w-full bg-zinc-50 border border-zinc-200 rounded-xl pl-4 pr-12 py-3 text-sm focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 outline-none transition-all"
                 />
                 <button

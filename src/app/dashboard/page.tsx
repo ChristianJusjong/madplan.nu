@@ -26,6 +26,10 @@ export default async function DashboardPage() {
         orderBy: { createdAt: "desc" }
     });
 
+    const recurringMeals = await db.recurringMeal.findMany({
+        where: { userId }
+    });
+
     const generateAction = async () => {
         "use server";
         await generateWeeklyPlan();
@@ -46,19 +50,19 @@ export default async function DashboardPage() {
         <div className="min-h-screen bg-gray-50 p-4 lg:p-8">
             <header className="mb-8 flex justify-between items-center max-w-7xl mx-auto">
                 <div>
-                    <h1 className="text-3xl font-bold text-gray-900">Weekly Meal Plan</h1>
+                    <h1 className="text-3xl font-bold text-gray-900">Ugens Madplan</h1>
                     <div className="flex items-center gap-4 mt-1">
-                        <p className="text-gray-600">Goal: {user.dailyCalorieGoal} kcal/day</p>
-                        <SettingsModal user={user} />
+                        <p className="text-gray-600">Mål: {user.dailyCalorieGoal} kcal/dag</p>
+                        <SettingsModal user={user} recurringMeals={recurringMeals} />
                     </div>
                 </div>
                 <div className="flex gap-2">
                     <Link href="/recipes" className="bg-white border text-gray-700 px-4 py-2 rounded-lg shadow-sm hover:bg-gray-50 flex items-center gap-2 font-medium">
-                        📖 Cookbook
+                        📖 Kogebog
                     </Link>
                     <form action={generateAction}>
                         <button className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg shadow transition-colors flex items-center gap-2 font-medium">
-                            Generate New Plan
+                            Generer Ny Plan
                         </button>
                     </form>
                 </div>
@@ -80,10 +84,10 @@ export default async function DashboardPage() {
                 </div>
             ) : (
                 <div className="text-center py-20 max-w-md mx-auto">
-                    <h2 className="text-xl text-gray-600 mb-4">No plan generated yet.</h2>
+                    <h2 className="text-xl text-gray-600 mb-4">Ingen madplan endnu.</h2>
                     <form action={generateAction}>
                         <button className="w-full bg-emerald-600 text-white px-6 py-3 rounded-lg text-lg shadow-lg hover:bg-emerald-700 transition">
-                            Generate My Budget Plan
+                            Generer Min Økonomiplan
                         </button>
                     </form>
                 </div>

@@ -23,7 +23,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "Madplan.nu",
-  description: "AI Powered Meal Planner",
+  description: "AI-drevet Madplanlægning",
 };
 
 export default function RootLayout({
@@ -33,7 +33,7 @@ export default function RootLayout({
 }>) {
   return (
     <ClerkProvider>
-      <html lang="en">
+      <html lang="da">
         <body
           className={`${geistSans.variable} ${geistMono.variable} antialiased`}
         >
@@ -42,11 +42,11 @@ export default function RootLayout({
             <div className="flex gap-4">
               <SignedOut>
                 <SignInButton mode="modal">
-                  <button className="text-sm font-medium hover:underline">Sign In</button>
+                  <button className="text-sm font-medium hover:underline">Log ind</button>
                 </SignInButton>
               </SignedOut>
               <SignedIn>
-                <Link href="/dashboard" className="text-sm font-medium hover:underline flex items-center">Dashboard</Link>
+                <Link href="/dashboard" className="text-sm font-medium hover:underline flex items-center">Madplan</Link>
                 <UserButton />
               </SignedIn>
             </div>

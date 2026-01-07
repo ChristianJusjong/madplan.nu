@@ -69,30 +69,39 @@ export async function generateWeeklyPlan() {
     if (prefs.skipLunch) strategies.push("- WORK LUNCH: Do NOT plan Lunch for Monday-Friday (User eats at work). Distribute calories to Breakfast/Dinner.");
     if (prefs.leftovers) strategies.push("- LEFTOVERS: Cook double portions for Dinner. Serve the PREVIOUS night's dinner as the next day's Lunch (e.g. Mon Dinner -> Tue Lunch).");
 
-    // Construct Prompt
+    // Fetch recurring meals
+    const recurringMeals = await db.recurringMeal.findMany({ where: { userId } });
+    const recurringContext = recurringMeals.map(m =>
+      `- ${m.name} (${m.calories} kcal) til ${m.type} om ${m.days.join(", ")}`
+    ).join("\n");
+
     const prompt = `
-      You are a Michelin-Star Budget Dietician. Create a 7-day meal plan (3 meals per day) for a user with these stats:
-      - Daily Calorie Goal: ${user.dailyCalorieGoal} kcal PER PERSON (Adult)
-      - Family Size: ${family.adults} Adults, ${family.children} Children.
+      Du er en Michelin-kok og budget-ernæringsekspert. Lav en 7-dages madplan (3 måltider pr. dag) til en bruger med disse stats:
+      - Dagligt Kaloriemål: ${user.dailyCalorieGoal} kcal PR. PERSON (Voksen)
+      - Familiestørrelse: ${family.adults} Voksne, ${family.children} Børn.
       
-      WEEKLY DEALS (Maximize usage of these to save money):
+      VIGTIGT: Brugeren har disse FASTE MÅLTIDER (Generer IKKE måltider for disse tidspunkter, men tæl deres kalorier med!):
+      ${recurringContext}
+
+      UGENS TILBUD (Maksimer brugen af disse for at spare penge):
       ${weeklyDeals}
       
       ${cookbookContext}
       
-      PLANNING STRATEGIES:
+      PLANLÆGNINGSSTRATEGIER:
       ${strategies.join("\n")}
       
-      INSTRUCTIONS:
-      1. INSPIRATION: Use exciting, gourmet, modern recipe names.
-      2. USE COOKBOOK: If you use a recipe from the USER COOKBOOK, you MUST include its "recipeId" in the meal object.
-      3. FAMILY SCALING: The "meals" calories are per adult. But the **Shopping List** MUST BE SCALED for ${family.adults} Adults + ${family.children} Children.
-      4. METRIC SYSTEM ONLY: Use grams (g), liters (l), pieces (pcs).
-      5. ZERO FOOD WASTE: Reuse ingredients across the week.
+      INSTRUKTIONER:
+      1. SPROG: Alt tekst SKAL være på DANSK.
+      2. GOURMET NAVNE: Brug inspirerende, menuforklarende navne (f.eks. "Citronbagt Kylling med Quinoa" i stedet for "Kylling og Ris").
+      3. BRUG KOGEBOG: Hvis du bruger en opskrift fra BRUGERENS KOGEBOG, SKAL du inkludere dens "recipeId".
+      4. FAMILIE SKALERING: "meals" kalorier er pr. voksen. Men **Indkøbslisten** SKAL være skaleret til ${family.adults} Voksne + ${family.children} Børn.
+      5. NUL MADSPILD: Genbrug ingredienser på tværs af ugen.
+      6. MÅLEENHEDER: Brug KUN metriske enheder (g, kg, dl, l, stk).
       
       OUTPUT FORMAT:
-      Strict JSON only. No markdown. Structure:
-      {"days":[{"day":"Monday","meals":[{"type":"Breakfast","name":"Recipe Name","recipeId":"OPTIONAL_UUID","calories":500,"ingredients":["50g Oatmeal"]}]}],"shoppingList":[{"item":"Egg","amount":"21 pcs","estimatedPrice":45,"currency":"DKK"}]}
+      Streng JSON kun. Ingen markdown. Struktur:
+      {"days":[{"day":"Mandag","meals":[{"type":"Morgenmad","name":"Opskrift Navn","recipeId":"VALGFRI_UUID","calories":500,"ingredients":["50g Havregryn"]}]}],"shoppingList":[{"item":"Æg","amount":"21 stk","estimatedPrice":45,"currency":"DKK"}]}
     `;
 
     const groq = new Groq({
@@ -103,7 +112,7 @@ export async function generateWeeklyPlan() {
       messages: [
         {
           role: "system",
-          content: "You are a helpful nutritionist JSON generator. Ensure valid strict JSON output. Do not wrap in markdown.",
+          content: "Du er en kreativ dansk gourmetkok og ernæringsekspert. Du svarer altid i gyldig streng JSON.",
         },
         {
           role: "user",
