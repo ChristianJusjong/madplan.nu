@@ -4,9 +4,15 @@ import { db } from "@/lib/db";
 import { calculateCalories } from "@/lib/calculations";
 import { Gender, ActivityLevel } from "@prisma/client";
 import { revalidatePath } from "next/cache";
+import { currentUser } from "@clerk/nextjs/server";
+import { redirect } from "next/navigation";
 
 export async function updateUserMetrics(formData: FormData) {
-    const userId = "demo-user-id"; // Hardcoded for single-user mvp/demo
+    const user = await currentUser();
+    if (!user) return redirect("/");
+
+    const userId = user.id;
+    const userEmail = user.emailAddresses[0]?.emailAddress || `${userId}@example.com`;
 
     const width = parseFloat(formData.get("weight") as string);
     const height = parseFloat(formData.get("height") as string);
@@ -34,7 +40,7 @@ export async function updateUserMetrics(formData: FormData) {
             activityLevel,
             bmr,
             dailyCalorieGoal,
-            email: "demo@example.com", // Mock email
+            email: userEmail,
         },
         create: {
             id: userId,
@@ -45,7 +51,7 @@ export async function updateUserMetrics(formData: FormData) {
             activityLevel,
             bmr,
             dailyCalorieGoal,
-            email: "demo@example.com",
+            email: userEmail,
         },
     });
 

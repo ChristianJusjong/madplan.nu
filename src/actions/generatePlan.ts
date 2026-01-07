@@ -9,8 +9,12 @@ import { getWeeklyDeals } from "@/lib/deals";
 // const groq = new Groq({ ... });
 
 
+import { auth } from "@clerk/nextjs/server";
 
-export async function generateWeeklyPlan(userId: string) {
+export async function generateWeeklyPlan() {
+  const { userId } = await auth();
+  if (!userId) throw new Error("Unauthorized");
+
   try {
     const user = await db.user.findUnique({
       where: { id: userId },

@@ -6,8 +6,15 @@ import { revalidatePath } from "next/cache";
 
 export const dynamic = "force-dynamic";
 
+import { auth } from "@clerk/nextjs/server";
+import { redirect } from "next/navigation";
+
 export default async function DashboardPage() {
-    const userId = "demo-user-id";
+    const { userId } = await auth();
+
+    if (!userId) {
+        redirect("/");
+    }
 
     // Fetch data
     const user = await db.user.findUnique({ where: { id: userId } });
@@ -18,7 +25,7 @@ export default async function DashboardPage() {
 
     const generateAction = async () => {
         "use server";
-        await generateWeeklyPlan(userId);
+        await generateWeeklyPlan();
         revalidatePath("/dashboard");
     };
 
