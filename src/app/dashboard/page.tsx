@@ -4,11 +4,13 @@ import MealPlanGrid from "@/components/MealPlanGrid";
 import ShoppingList from "@/components/ShoppingList";
 import { generateWeeklyPlan } from "@/actions/generatePlan";
 import { revalidatePath } from "next/cache";
+import { auth } from "@clerk/nextjs/server";
+import { redirect } from "next/navigation";
+import SettingsModal from "@/components/SettingsModal";
+import Link from "next/link";
 
 export const dynamic = "force-dynamic";
 
-import { auth } from "@clerk/nextjs/server";
-import { redirect } from "next/navigation";
 
 export default async function DashboardPage() {
     const { userId } = await auth();
@@ -45,13 +47,21 @@ export default async function DashboardPage() {
             <header className="mb-8 flex justify-between items-center max-w-7xl mx-auto">
                 <div>
                     <h1 className="text-3xl font-bold text-gray-900">Weekly Meal Plan</h1>
-                    <p className="text-gray-600">Goal: {user.dailyCalorieGoal} kcal/day</p>
+                    <div className="flex items-center gap-4 mt-1">
+                        <p className="text-gray-600">Goal: {user.dailyCalorieGoal} kcal/day</p>
+                        <SettingsModal user={user} />
+                    </div>
                 </div>
-                <form action={generateAction}>
-                    <button className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg shadow transition-colors flex items-center gap-2 font-medium">
-                        Generate New Plan
-                    </button>
-                </form>
+                <div className="flex gap-2">
+                    <Link href="/recipes" className="bg-white border text-gray-700 px-4 py-2 rounded-lg shadow-sm hover:bg-gray-50 flex items-center gap-2 font-medium">
+                        📖 Cookbook
+                    </Link>
+                    <form action={generateAction}>
+                        <button className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg shadow transition-colors flex items-center gap-2 font-medium">
+                            Generate New Plan
+                        </button>
+                    </form>
+                </div>
             </header>
 
             {mealPlan ? (

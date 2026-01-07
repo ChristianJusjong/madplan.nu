@@ -54,6 +54,7 @@ model User {
   preferences      Json?    // Stores { skipLunch: boolean, leftovers: boolean, etc. }
   
   mealPlans MealPlan[]
+  recipes   Recipe[]
 }
 
 model MealPlan {
@@ -81,4 +82,28 @@ model ShoppingList {
   
   mealPlanId String   @unique
   mealPlan   MealPlan @relation(fields: [mealPlanId], references: [id], onDelete: Cascade)
+}
+
+model Recipe {
+  id          String   @id @default(uuid())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  title       String
+  description String?
+  
+  ingredients Json     // List of ingredients
+  instructions Json    // Step by step instructions
+  
+  prepTime    Int?     // minutes
+  cookTime    Int?     // minutes
+  servings    Int      @default(4)
+  
+  tags        String[] // ["Healthy", "Dinner", "Italian"]
+  
+  sourceUrl   String?
+  imageUrl    String?
+  
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
