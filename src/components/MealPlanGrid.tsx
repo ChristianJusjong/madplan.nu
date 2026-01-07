@@ -1,7 +1,6 @@
-```typescript
 "use client";
 
-import { Check, Coins, ChefHat } from "lucide-react";
+import { Check, Coins, ChefHat, Zap } from "lucide-react";
 import Link from "next/link";
 
 type Meal = {
@@ -9,7 +8,7 @@ type Meal = {
     name: string;
     calories: number;
     ingredients: string[];
-    recipeId?: string; // Added recipeId
+    recipeId?: string;
 };
 
 type DayPlan = {
@@ -18,66 +17,72 @@ type DayPlan = {
 };
 
 export default function MealPlanGrid({ planData }: { planData: any }) {
-    const { days } = planData as { days: DayPlan[] };
+    if (!planData || !planData.days) return null;
 
-    // Hardcoded for now, ideally matched with server logic
-    const deals = ["minced beef", "carrots", "eggs", "chicken", "rice", "broccoli", "tuna", "salmon", "spinach"];
-
-    const isOnDeal = (ingredients: string[]) => {
-        return ingredients.some(ing => deals.some(deal => ing.toLowerCase().includes(deal.toLowerCase())));
-    };
+    // Hardcoded deal list for demo purposes (simple matching)
+    // In a real app, this would come from the generated JSON or Deal Service context
+    const dealKeywords = ["kylling", "oksekød", "æg", "mælk", "smør", "kaffe", "pasta", "ris"];
 
     return (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {days.map((day) => (
-                <div key={day.day} className="bg-white rounded-xl shadow-sm hover:shadow-md transition-shadow duration-200 overflow-hidden border border-gray-100 flex flex-col h-full">
-                    <div className="bg-gradient-to-r from-emerald-50 to-teal-50 px-4 py-3 border-b border-emerald-100 flex justify-between items-center">
-                        <h3 className="text-lg font-bold text-emerald-800">{day.day}</h3>
-                        <ChefHat className="w-4 h-4 text-emerald-600 opacity-50" />
-                    </div>
-                    <div className="p-4 space-y-4 flex-grow">
-                        {day.meals.map((meal, idx) => (
-                            <div key={idx} className="flex flex-col border-b border-gray-100 last:border-0 pb-4 last:pb-0">
-                                <div className="flex justify-between items-start mb-1">
-                                    <span className="text-[10px] font-bold uppercase text-gray-500 tracking-wider bg-gray-100 px-2 py-0.5 rounded-full">{meal.type}</span>
-                                    <div className="font-semibold text-gray-900 group-hover:text-emerald-700 transition">
-                                        {meal.name}
-                                        {meal.recipeId && (
-                                            <Link 
-                                                href="/recipes" 
-                                                className="ml-2 inline-flex items-center text-xs bg-emerald-100 text-emerald-800 px-1.5 py-0.5 rounded border border-emerald-200 hover:bg-emerald-200"
-                                                title="Saved in Cookbook"
-                                            >
-                                                📖 Recipe
-                                            </Link>
-                                        )}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-1 gap-6">
+            {planData.days.map((day: DayPlan, i: number) => {
+                const dayCalories = day.meals.reduce((acc, meal) => acc + meal.calories, 0);
+
+                return (
+                    <div key={i} className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-shadow">
+                        <div className="bg-gradient-to-r from-gray-50 to-white px-6 py-3 border-b border-gray-100 flex justify-between items-center">
+                            <h3 className="font-bold text-gray-800">{day.day}</h3>
+                            <span className="text-xs font-medium text-gray-500 bg-gray-100 px-2 py-1 rounded-full">
+                                Total: {dayCalories} kcal
+                            </span>
+                        </div>
+                        <div className="p-6 space-y-6">
+                            {day.meals.map((meal, j) => (
+                                <div key={j} className="group">
+                                    <div className="flex justify-between items-start mb-1">
+                                        <div className="flex items-center gap-2">
+                                            <h4 className="font-semibold text-gray-900 group-hover:text-emerald-700 transition">
+                                                {meal.name}
+                                            </h4>
+                                            {meal.recipeId && (
+                                                <Link
+                                                    href="/recipes"
+                                                    className="inline-flex items-center gap-1 text-[10px] bg-emerald-100 text-emerald-800 px-1.5 py-0.5 rounded border border-emerald-200 hover:bg-emerald-200 uppercase font-bold tracking-wider"
+                                                    title="Saved in Cookbook"
+                                                >
+                                                    <ChefHat className="w-3 h-3" /> Recipe
+                                                </Link>
+                                            )}
+                                        </div>
+                                        <span className="text-xs font-bold text-emerald-600 bg-emerald-50 px-2 py-1 rounded-full">
+                                            {meal.calories} kcal
+                                        </span>
                                     </div>
-                                    <span className="text-xs font-bold text-emerald-600 bg-emerald-50 px-2 py-1 rounded-full">
-                                        {meal.calories} kcal
-                                    </span>
-                                </div>
-                                <div className="mt-1">
-                                    <div className="flex flex-wrap gap-1 mt-2">
-                                        {meal.ingredients.map((ing, i) => (
-                                            <span key={i} className={`text - [10px] px - 1.5 py - 0.5 rounded border ${
-    deals.some(deal => ing.toLowerCase().includes(deal.toLowerCase()))
-    ? "bg-yellow-50 text-yellow-700 border-yellow-200"
-    : "bg-gray-50 text-gray-600 border-gray-100"
-} `}>
-                                                {ing}
-                                            </span>
-                                        ))}
+                                    <p className="text-xs text-gray-500 uppercase tracking-wider font-medium mb-2">{meal.type}</p>
+
+                                    <div className="flex flex-wrap gap-1.5">
+                                        {meal.ingredients.map((ing, k) => {
+                                            const isDeal = dealKeywords.some(kw => ing.toLowerCase().includes(kw));
+                                            return (
+                                                <span
+                                                    key={k}
+                                                    className={`text-[10px] px-2 py-0.5 rounded border ${isDeal
+                                                            ? "bg-yellow-50 text-yellow-700 border-yellow-200 font-medium"
+                                                            : "bg-gray-50 text-gray-600 border-gray-100"
+                                                        }`}
+                                                >
+                                                    {isDeal && <Zap className="w-3 h-3 inline mr-1 -mt-0.5" />}
+                                                    {ing}
+                                                </span>
+                                            );
+                                        })}
                                     </div>
                                 </div>
-                            </div>
-                        ))}
+                            ))}
+                        </div>
                     </div>
-                    <div className="bg-gray-50 px-4 py-2 text-xs text-gray-400 text-center border-t border-gray-100">
-                        Total: {day.meals.reduce((acc, m) => acc + m.calories, 0)} kcal
-                    </div>
-                </div>
-            ))}
+                );
+            })}
         </div>
     );
 }
-```
