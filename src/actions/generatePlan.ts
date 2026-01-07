@@ -91,7 +91,7 @@ export async function generateWeeklyPlan() {
       
       OUTPUT FORMAT:
       Strict JSON only. No markdown. Structure:
-      {"days":[{"day":"Monday","meals":[{"type":"Breakfast","name":"Recipe Name","recipeId":"OPTIONAL_UUID","calories":500,"ingredients":["50g Oatmeal"]}]}],"shoppingList":[{"store":"Netto","items":[{"item":"Egg","amount":"21 pcs","estimatedPrice":45,"currency":"DKK"}]},{"store":"Rema 1000","items":[]},{"store":"Other","items":[]}]}
+      {"days":[{"day":"Monday","meals":[{"type":"Breakfast","name":"Recipe Name","recipeId":"OPTIONAL_UUID","calories":500,"ingredients":["50g Oatmeal"]}]}],"shoppingList":[{"item":"Egg","amount":"21 pcs","estimatedPrice":45,"currency":"DKK"}]}
     `;
 
     const groq = new Groq({

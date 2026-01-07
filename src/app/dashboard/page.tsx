@@ -74,7 +74,7 @@ export default async function DashboardPage() {
                     {/* Sidebar: Shopping List */}
                     <div className="lg:col-span-1">
                         {planData.shoppingList && (
-                            <ShoppingList groups={planData.shoppingList} planId={mealPlan.id} />
+                            <ShoppingList items={planData.shoppingList} planId={mealPlan.id} />
                         )}
                     </div>
                 </div>

@@ -40,11 +40,7 @@ export async function getWeeklyDeals(): Promise<string> {
             validTo: offer.run_till
         }));
 
-        // Filter out expired deals
-        const now = new Date();
-        const validDeals = deals.filter(d => new Date(d.validTo) > now);
-
-        return formatDealsForPrompt(validDeals);
+        return formatDealsForPrompt(deals);
 
     } catch (error) {
         console.error("Failed to fetch deals from API:", error);
