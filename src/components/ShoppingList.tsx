@@ -73,7 +73,6 @@ export default function ShoppingList({ items, planId }: { items: Item[], planId?
     const totalEstimated = items.reduce((acc, i) => acc + (i.estimatedPrice || 0), 0);
 
     return (
-    return (
         <div className="bg-white rounded-3xl shadow-sm border border-zinc-100 p-6 sticky top-8">
             <div className="flex justify-between items-center mb-6">
                 <div>
@@ -100,8 +99,8 @@ export default function ShoppingList({ items, planId }: { items: Item[], planId?
                         >
                             <div className="flex items-start gap-3 pt-0.5">
                                 <div className={`w-5 h-5 rounded-full border-[1.5px] flex items-center justify-center transition-all mt-0.5 ${checked[item.id!]
-                                        ? "bg-zinc-900 border-zinc-900 text-white"
-                                        : "border-zinc-300 group-hover:border-emerald-500"
+                                    ? "bg-zinc-900 border-zinc-900 text-white"
+                                    : "border-zinc-300 group-hover:border-emerald-500"
                                     }`}>
                                     {checked[item.id!] && <Check className="w-3 h-3" />}
                                 </div>

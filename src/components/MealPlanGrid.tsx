@@ -43,7 +43,6 @@ export default function MealPlanGrid({ planData, planId }: { planData: any, plan
     };
 
     return (
-    return (
         <div className="space-y-8">
             {planData.days.map((day: DayPlan, i: number) => {
                 const dayCalories = day.meals.reduce((acc, meal) => acc + meal.calories, 0);
@@ -104,8 +103,8 @@ export default function MealPlanGrid({ planData, planId }: { planData: any, plan
                                                                 <span
                                                                     key={k}
                                                                     className={`text-xs px-2.5 py-1 rounded-full border transition-colors ${isDeal
-                                                                            ? "bg-amber-50 text-amber-900 border-amber-100 font-medium"
-                                                                            : "bg-white text-zinc-600 border-zinc-200"
+                                                                        ? "bg-amber-50 text-amber-900 border-amber-100 font-medium"
+                                                                        : "bg-white text-zinc-600 border-zinc-200"
                                                                         }`}
                                                                 >
                                                                     {isDeal && <Zap className="w-3 h-3 inline mr-1 text-amber-500" />}

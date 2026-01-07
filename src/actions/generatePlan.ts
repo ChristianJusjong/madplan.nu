@@ -45,8 +45,8 @@ export async function generateWeeklyPlan() {
     }
 
     const weeklyDeals = await getWeeklyDeals();
-    const prefs = (user.preferences as any) || {};
-    const family = (user.familyMembers as any) || { adults: 1, children: 0 };
+    const prefs = (user as any).preferences || {};
+    const family = (user as any).familyMembers || { adults: 1, children: 0 };
     const totalPeople = family.adults + (family.children * 0.5); // Crude estimation for scaling
 
     // Fetch user recipes
