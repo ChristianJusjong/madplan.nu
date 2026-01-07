@@ -11,6 +11,8 @@ import { getWeeklyDeals } from "@/lib/deals";
 
 import { auth } from "@clerk/nextjs/server";
 
+import { APP_CONFIG } from "@/lib/constants";
+
 export async function generateWeeklyPlan() {
   const { userId } = await auth();
   if (!userId) throw new Error("Unauthorized");
@@ -22,6 +24,24 @@ export async function generateWeeklyPlan() {
 
     if (!user) {
       throw new Error("User not found");
+    }
+
+    // RATE LIMITING CHECK
+    // Count plans created in the last 24 hours
+    const oneDayAgo = new Date();
+    oneDayAgo.setDate(oneDayAgo.getDate() - 1);
+
+    const recentPlans = await db.mealPlan.count({
+      where: {
+        userId,
+        createdAt: {
+          gte: oneDayAgo
+        }
+      }
+    });
+
+    if (recentPlans >= APP_CONFIG.MAX_PLANS_PER_DAY) {
+      throw new Error(`Rate limit reached: You can only generate ${APP_CONFIG.MAX_PLANS_PER_DAY} plans per day.`);
     }
 
     const weeklyDeals = await getWeeklyDeals();

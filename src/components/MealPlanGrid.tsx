@@ -18,6 +18,8 @@ type DayPlan = {
     meals: Meal[];
 };
 
+import { DEAL_KEYWORDS } from "@/lib/constants";
+
 export default function MealPlanGrid({ planData, planId }: { planData: any, planId: string }) {
     const [loading, setLoading] = useState<string | null>(null); // "dayIndex-mealIndex"
 
@@ -25,7 +27,7 @@ export default function MealPlanGrid({ planData, planId }: { planData: any, plan
 
     // Hardcoded deal list for demo purposes (simple matching)
     // In a real app, this would come from the generated JSON or Deal Service context
-    const dealKeywords = ["kylling", "oksekød", "æg", "mælk", "smør", "kaffe", "pasta", "ris"];
+    const dealKeywords = DEAL_KEYWORDS;
 
     const handleRegenerate = async (dayIndex: number, mealIndex: number) => {
         const id = `${dayIndex}-${mealIndex}`;
