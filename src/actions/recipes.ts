@@ -4,7 +4,7 @@ import { db } from "@/lib/db";
 import { auth } from "@clerk/nextjs/server";
 import { Groq } from "groq-sdk";
 import { revalidatePath } from "next/cache";
-import { cleanJsonResponse } from "./generatePlan";
+import { cleanJsonResponse } from "@/lib/utils";
 
 export async function getRecipes() {
     const { userId } = await auth();

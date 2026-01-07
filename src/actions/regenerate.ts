@@ -4,7 +4,7 @@ import { Groq } from "groq-sdk";
 import { db } from "@/lib/db";
 import { auth } from "@clerk/nextjs/server";
 import { revalidatePath } from "next/cache";
-import { cleanJsonResponse } from "./generatePlan";
+import { cleanJsonResponse } from "@/lib/utils";
 
 export async function regenerateMeal(planId: string, dayIndex: number, mealIndex: number) {
     const { userId } = await auth();

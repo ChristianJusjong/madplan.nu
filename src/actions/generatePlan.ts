@@ -4,6 +4,7 @@ import { Groq } from "groq-sdk";
 import { db } from "@/lib/db"; // Use alias from tsconfig
 import { addDays } from "date-fns";
 import { getWeeklyDeals } from "@/lib/deals";
+import { cleanJsonResponse } from "@/lib/utils";
 
 // Initialize Groq inside function to avoid build-time errors if env is missing
 // const groq = new Groq({ ... });
@@ -150,6 +151,4 @@ export async function generateWeeklyPlan() {
   }
 }
 
-export function cleanJsonResponse(response: string): string {
-  return response.replace(/```json/g, "").replace(/```/g, "").trim();
-}
+
