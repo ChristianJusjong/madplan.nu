@@ -1,7 +1,8 @@
 "use client";
 
 import { updateUserMetrics } from "@/actions/user";
-import { Gender, ActivityLevel } from "@prisma/client";
+// Removed Prisma imports to avoid client bundle issues
+// import { Gender, ActivityLevel } from "@prisma/client";
 import { ArrowRight, Ruler, Scale, User, Activity, Users, Trophy } from "lucide-react";
 
 export default function SetupForm() {

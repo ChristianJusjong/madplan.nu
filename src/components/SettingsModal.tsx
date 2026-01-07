@@ -3,13 +3,13 @@
 import { useState } from "react";
 import { Settings, X, Users, Target } from "lucide-react";
 import { updatePreferences } from "@/actions/settings";
-import { Goal, User } from "@prisma/client";
+import type { User } from "@prisma/client";
 
 export default function SettingsModal({ user }: { user: User }) {
     const [isOpen, setIsOpen] = useState(false);
     const prefs = (user.preferences as any) || {};
     const family = (user.familyMembers as any) || { adults: 1, children: 0 };
-    const goals = Object.values(Goal);
+    const goals = ["LOSE_WEIGHT", "MAINTAIN", "GAIN_WEIGHT", "BUILD_MUSCLE"];
 
     return (
         <>
