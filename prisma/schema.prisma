@@ -41,6 +41,8 @@ model User {
   bmr              Float
   dailyCalorieGoal Float
   
+  preferences      Json?    // Stores { skipLunch: boolean, leftovers: boolean, etc. }
+  
   mealPlans MealPlan[]
 }
 

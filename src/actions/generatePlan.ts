@@ -25,6 +25,11 @@ export async function generateWeeklyPlan() {
     }
 
     const weeklyDeals = await getWeeklyDeals();
+    const prefs = (user.preferences as any) || {};
+
+    let strategies = [];
+    if (prefs.skipLunch) strategies.push("- WORK LUNCH: Do NOT plan Lunch for Monday-Friday (User eats at work). Distribute calories to Breakfast/Dinner.");
+    if (prefs.leftovers) strategies.push("- LEFTOVERS: Cook double portions for Dinner. Serve the PREVIOUS night's dinner as the next day's Lunch (e.g. Mon Dinner -> Tue Lunch).");
 
     // Construct Prompt
     const prompt = `
@@ -35,14 +40,18 @@ export async function generateWeeklyPlan() {
       WEEKLY DEALS (Maximize usage of these to save money):
       ${weeklyDeals}
       
+      PLANNING STRATEGIES:
+      ${strategies.join("\n")}
+      
       INSTRUCTIONS:
-      1. PRIORITIZE using ingredients from the Weekly Deals to keep costs low.
-      2. Ensure the plan meets the calorie goal (+/- 100 kcal).
-      3. Create a Shopping List that aggregates all ingredients.
+      1. METRIC SYSTEM ONLY: Use grams (g), liters (l), pieces (pcs). NO cups/ounces.
+      2. ZERO FOOD WASTE: If you open an ingredient (e.g. Cauliflower), use the REST of it in another meal later in the week.
+      3. DEAL PRIORITY: Incorporate weekly deals aggressively.
+      4. SHOPPING LIST: Aggregate all ingredients.
       
       OUTPUT FORMAT:
       Strict JSON only. No markdown. Structure:
-      {"days":[{"day":"Monday","meals":[{"type":"Breakfast","name":"Recipe Name","calories":500,"ingredients":["Egg"]}]}],"shoppingList":[{"item":"Egg","amount":"7 pcs","estimatedPrice":15,"currency":"DKK"}]}
+      {"days":[{"day":"Monday","meals":[{"type":"Breakfast","name":"Recipe Name (Source)","calories":500,"ingredients":["50g Oatmeal"]}]}],"shoppingList":[{"item":"Egg","amount":"7 pcs","estimatedPrice":15,"currency":"DKK"}]}
     `;
 
     const groq = new Groq({
