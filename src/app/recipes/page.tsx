@@ -1,9 +1,11 @@
 import { getRecipes, deleteRecipe, importRecipeFromUrl } from "@/actions/recipes";
 import Link from "next/link";
 import { ArrowLeft, Trash2, Link as LinkIcon, Plus, Loader2, Utensils, Clock, Users } from "lucide-react";
+import { auth } from "@clerk/nextjs/server";
 
 export default async function RecipesPage() {
     const recipes = await getRecipes();
+    const { userId } = await auth();
 
     return (
         <div className="min-h-screen bg-zinc-50 font-sans">
@@ -59,14 +61,16 @@ export default async function RecipesPage() {
                                         <h3 className="text-lg font-bold text-zinc-900 leading-tight group-hover:text-emerald-700 transition-colors">
                                             {recipe.title}
                                         </h3>
-                                        <form action={async () => {
-                                            "use server";
-                                            await deleteRecipe(recipe.id);
-                                        }}>
-                                            <button className="text-zinc-300 hover:text-red-500 transition-colors">
-                                                <Trash2 className="w-4 h-4" />
-                                            </button>
-                                        </form>
+                                        {recipe.userId === userId && (
+                                            <form action={async () => {
+                                                "use server";
+                                                await deleteRecipe(recipe.id);
+                                            }}>
+                                                <button className="text-zinc-300 hover:text-red-500 transition-colors">
+                                                    <Trash2 className="w-4 h-4" />
+                                                </button>
+                                            </form>
+                                        )}
                                     </div>
 
                                     <div className="flex flex-wrap gap-2 mb-4">

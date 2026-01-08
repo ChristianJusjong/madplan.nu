@@ -9,7 +9,16 @@ import { cleanJsonResponse } from "@/lib/utils";
 export async function getRecipes() {
     const { userId } = await auth();
     if (!userId) return [];
-    return db.recipe.findMany({ where: { userId }, orderBy: { createdAt: "desc" } });
+
+    return db.recipe.findMany({
+        where: {
+            OR: [
+                { userId },
+                { userId: "demo-user-id" }
+            ]
+        },
+        orderBy: { createdAt: "desc" }
+    });
 }
 
 export async function deleteRecipe(id: string) {

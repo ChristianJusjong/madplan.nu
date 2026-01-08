@@ -12,8 +12,8 @@ export const SUPPORTED_SITES: Record<string, SiteConfig> = {
     iform: {
         name: "Iform",
         baseUrl: "https://iform.dk/sunde-opskrifter",
-        recipeLinkSelector: "article a, .teaser a", // Broad selector, will filter by pattern
-        paginationSelector: ".pager, .pagination",
+        recipeLinkSelector: "a.teaser__link", // Updated from browser inspection
+        paginationSelector: ".paginator__link",
         urlPattern: /iform\.dk\/(sunde-opskrifter|opskrifter)\/.+/,
         jsonLd: true
     },
