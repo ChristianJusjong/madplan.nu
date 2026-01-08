@@ -107,6 +107,8 @@ model Recipe {
   
   userId      String
   user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, sourceUrl])
 }
 
 model RecurringMeal {
