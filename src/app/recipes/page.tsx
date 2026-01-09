@@ -97,11 +97,15 @@ export default async function RecipesPage() {
                                     </div>
 
                                     <div className="space-y-1">
-                                        {(recipe.instructions as any[]).slice(0, 2).map((step, i) => (
+                                        {Array.isArray(recipe.instructions) ? (recipe.instructions as any[]).slice(0, 2).map((step, i) => (
                                             <p key={i} className="text-sm text-zinc-500 line-clamp-1 pl-3 border-l-2 border-zinc-100">
                                                 {step}
                                             </p>
-                                        ))}
+                                        )) : (typeof recipe.instructions === 'string' ? (
+                                            <p className="text-sm text-zinc-500 line-clamp-2 pl-3 border-l-2 border-zinc-100">
+                                                {recipe.instructions}
+                                            </p>
+                                        ) : null)}
                                     </div>
                                 </div>
 

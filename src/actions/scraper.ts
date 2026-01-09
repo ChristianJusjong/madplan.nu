@@ -96,16 +96,19 @@ export async function scrapeRecipe(url: string, siteKey: string): Promise<Scrape
         const cleanDescription = description.replace(/<[^>]*>/g, "").slice(0, 500); // Strip HTML, limit length
 
         // Instructions can be string, array of strings, or ItemList
-        let instructions = "";
+        // Instructions: ensure we store as string[]
+        let instructions: string[] = [];
         if (typeof recipeData.recipeInstructions === "string") {
-            instructions = recipeData.recipeInstructions;
+            // If it's a single string, wrap it or split it?
+            // Often it's newline separated if it's a blob
+            instructions = recipeData.recipeInstructions.split(/\n+/).filter(Boolean);
         } else if (Array.isArray(recipeData.recipeInstructions)) {
             instructions = recipeData.recipeInstructions.map((step: any) => {
                 if (typeof step === "string") return step;
                 if (step.text) return step.text;
                 if (typeof step === "object" && step.name) return step.name;
                 return "";
-            }).filter((s: string) => s).join("\n");
+            }).filter((s: string) => s);
         }
 
         // Ingredients
