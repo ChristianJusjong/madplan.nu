@@ -225,6 +225,6 @@ export default function ImportPage() {
                     </div>
                 </div>
             </div>
-
-            );
+        </div>
+    );
 }

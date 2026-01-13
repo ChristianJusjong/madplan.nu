@@ -31,7 +31,7 @@ export async function getRecipe(id: string) {
         where: {
             id,
             OR: [
-                { userId },
+                { userId: userId || undefined },
                 { userId: "demo-user-id" }
             ]
         }
