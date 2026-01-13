@@ -5,6 +5,7 @@ import { auth } from "@clerk/nextjs/server";
 import { revalidatePath } from "next/cache";
 import { Goal } from "@prisma/client";
 import { calculateCalories } from "@/lib/calculations";
+import { FamilyMembersSchema, UserPreferencesSchema } from "@/lib/schemas";
 
 export async function updatePreferences(formData: FormData) {
     const { userId } = await auth();
@@ -13,15 +14,20 @@ export async function updatePreferences(formData: FormData) {
     const user = await db.user.findUnique({ where: { id: userId } });
     if (!user) throw new Error("User not found");
 
-    // Preferences
-    const skipLunch = formData.get("skipLunch") === "on";
-    const leftovers = formData.get("leftovers") === "on";
-    const preferences = { skipLunch, leftovers };
 
-    // Family
-    const adults = parseInt(formData.get("adults") as string) || 1;
-    const children = parseInt(formData.get("children") as string) || 0;
-    const familyMembers = { adults, children };
+    // Validate Preferences
+    const prefsData = {
+        skipLunch: formData.get("skipLunch") === "on",
+        leftovers: formData.get("leftovers") === "on",
+    };
+    const preferences = UserPreferencesSchema.parse(prefsData);
+
+    // Validate Family
+    const familyData = {
+        adults: formData.get("adults"),
+        children: formData.get("children"),
+    };
+    const familyMembers = FamilyMembersSchema.parse(familyData);
 
     // Goal
     const goal = formData.get("goal") as Goal;

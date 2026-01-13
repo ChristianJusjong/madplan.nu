@@ -149,9 +149,17 @@ export async function generateWeeklyPlan() {
         startDate: startDate,
         endDate: endDate,
         planData: planData,
-        // Optional: Create Shopping List here too if logic permits
       },
     });
+
+    if (planData.shoppingList) {
+      await db.shoppingList.create({
+        data: {
+          mealPlanId: mealPlan.id,
+          items: planData.shoppingList
+        }
+      });
+    }
 
     return { success: true, mealPlanId: mealPlan.id };
   } catch (error) {

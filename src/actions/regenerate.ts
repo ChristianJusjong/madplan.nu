@@ -5,6 +5,7 @@ import { db } from "@/lib/db";
 import { auth } from "@clerk/nextjs/server";
 import { revalidatePath } from "next/cache";
 import { cleanJsonResponse } from "@/lib/utils";
+import { MealSchema } from "@/lib/schemas";
 
 export async function regenerateMeal(planId: string, dayIndex: number, mealIndex: number) {
     const { userId } = await auth();
@@ -65,10 +66,11 @@ export async function regenerateMeal(planId: string, dayIndex: number, mealIndex
     const content = completion.choices[0]?.message?.content;
     if (!content) throw new Error("AI Failed");
 
-    const newMeal = JSON.parse(cleanJsonResponse(content));
+    const rawData = JSON.parse(cleanJsonResponse(content));
+    const newMeal = MealSchema.parse(rawData);
 
     // Preserve type from original if AI forgets it, or update it
-    newMeal.type = targetMeal.type;
+    newMeal.type = targetMeal.type as any;
 
     // Update Plan Data
     planData.days[dayIndex].meals[mealIndex] = newMeal;

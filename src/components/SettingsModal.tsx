@@ -6,11 +6,21 @@ import { updatePreferences } from "@/actions/settings";
 import { addRecurringMeal, deleteRecurringMeal } from "@/actions/recurring";
 import type { User, RecurringMeal } from "@prisma/client";
 
+import { FamilyMembersSchema, UserPreferencesSchema, type FamilyMembers, type UserPreferences } from "@/lib/schemas";
+
 export default function SettingsModal({ user, recurringMeals = [] }: { user: User, recurringMeals?: RecurringMeal[] }) {
     const [isOpen, setIsOpen] = useState(false);
     const [activeTab, setActiveTab] = useState<"general" | "routine">("general");
-    const prefs = (user.preferences as any) || {};
-    const family = (user.familyMembers as any) || { adults: 1, children: 0 };
+
+    // Safely parse or default
+    const prefs = UserPreferencesSchema.safeParse(user.preferences).success
+        ? (user.preferences as UserPreferences)
+        : { skipLunch: false, leftovers: false };
+
+    const family = FamilyMembersSchema.safeParse(user.familyMembers).success
+        ? (user.familyMembers as FamilyMembers)
+        : { adults: 1, children: 0 };
+
     const goals = ["LOSE_WEIGHT", "MAINTAIN", "GAIN_WEIGHT", "BUILD_MUSCLE"];
 
     return (
@@ -24,13 +34,16 @@ export default function SettingsModal({ user, recurringMeals = [] }: { user: Use
             </button>
 
             {isOpen && (
-                <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-                    <div className="bg-white rounded-xl shadow-2xl max-w-md w-full overflow-hidden max-h-[90vh] flex flex-col">
-                        <div className="flex justify-between items-center p-4 border-b border-gray-100 bg-white z-10">
-                            <h2 className="text-xl font-bold text-gray-900">Indstillinger</h2>
+                <div className="fixed inset-0 bg-zinc-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-in fade-in duration-200">
+                    <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full overflow-hidden max-h-[90vh] flex flex-col scale-100 animate-in zoom-in-95 duration-200">
+                        <div className="flex justify-between items-center p-5 border-b border-gray-100 bg-white z-10">
+                            <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
+                                <Settings className="w-5 h-5 text-emerald-600" />
+                                Indstillinger
+                            </h2>
                             <button
                                 onClick={() => setIsOpen(false)}
-                                className="text-gray-400 hover:text-gray-600"
+                                className="text-gray-400 hover:text-gray-600 hover:bg-gray-100 p-2 rounded-full transition-all"
                             >
                                 <X className="w-5 h-5" />
                             </button>

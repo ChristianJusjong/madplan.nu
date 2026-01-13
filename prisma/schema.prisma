@@ -56,6 +56,25 @@ model User {
   mealPlans   MealPlan[]
   recipes     Recipe[]
   recurringMeals RecurringMeal[]
+  pantryItems PantryItem[]
+
+  // Gamification
+  currentStreak Int      @default(0)
+  longestStreak Int      @default(0)
+  lastLogDate   DateTime @default(now())
+}
+
+model PantryItem {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  name      String
+  amount    String?
+  unit      String?
+  
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
 
 model MealPlan {
@@ -80,6 +99,8 @@ model ShoppingList {
   updatedAt DateTime @updatedAt
   
   items     Json
+  checked   String[] @default([])
+  extras    Json     @default("[]") // Stores array of manual items
   
   mealPlanId String   @unique
   mealPlan   MealPlan @relation(fields: [mealPlanId], references: [id], onDelete: Cascade)

@@ -4,6 +4,7 @@ import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient } from "@prisma/client";
 import * as cheerio from "cheerio";
 import { SUPPORTED_SITES } from "../src/lib/scraper-config";
+import { findJsonLd, normalizeInstructions, extractImages, parseDuration } from "../src/lib/scraper-core";
 import * as dotenv from "dotenv";
 
 // Load env vars
@@ -63,27 +64,7 @@ async function scrapeUrl(url: string, siteConfig: any) {
 
         const html = await response.text();
         const $ = cheerio.load(html);
-        let recipeData: any = null;
-
-        // JSON-LD Extraction
-        if (siteConfig.jsonLd) {
-            $('script[type="application/ld+json"]').each((_, el) => {
-                try {
-                    const content = $(el).html();
-                    if (!content) return;
-                    const json = JSON.parse(content);
-                    const findRecipe = (obj: any): any => {
-                        if (!obj) return null;
-                        if (obj["@type"] === "Recipe") return obj;
-                        if (obj["@graph"] && Array.isArray(obj["@graph"])) return obj["@graph"].find((i: any) => i["@type"] === "Recipe");
-                        if (Array.isArray(obj)) return obj.find((i: any) => i["@type"] === "Recipe");
-                        return null;
-                    };
-                    const found = findRecipe(json);
-                    if (found) { recipeData = found; return false; }
-                } catch (e) { }
-            });
-        }
+        let recipeData = findJsonLd($);
 
         if (!recipeData) {
             console.log(`No JSON-LD for ${url}`);
@@ -94,36 +75,12 @@ async function scrapeUrl(url: string, siteConfig: any) {
         const title = recipeData.name || $("title").text();
         const description = (recipeData.description || "").replace(/<[^>]*>/g, "").slice(0, 500);
 
-        let instructions = "";
-        if (typeof recipeData.recipeInstructions === "string") instructions = recipeData.recipeInstructions;
-        else if (Array.isArray(recipeData.recipeInstructions)) {
-            instructions = recipeData.recipeInstructions.map((s: any) => {
-                if (typeof s === "string") return s;
-                if (s.text) return s.text;
-                if (s.name) return s.name;
-                return "";
-            }).filter(Boolean).join("\n");
-        }
+        const instructions = normalizeInstructions(recipeData.recipeInstructions);
 
         let ingredients: string[] = [];
         if (Array.isArray(recipeData.recipeIngredient)) ingredients = recipeData.recipeIngredient;
 
-        let imageUrl = "";
-        if (recipeData.image) {
-            if (typeof recipeData.image === "string") imageUrl = recipeData.image;
-            else if (Array.isArray(recipeData.image)) {
-                const img = recipeData.image[0];
-                if (typeof img === "string") imageUrl = img;
-                else if (img?.url) imageUrl = img.url;
-            } else if (recipeData.image.url) imageUrl = recipeData.image.url;
-        }
-
-        const parseDuration = (iso: any) => {
-            if (!iso || typeof iso !== 'string') return 0;
-            const match = iso.match(/PT(?:(\d+)H)?(?:(\d+)M)?/);
-            if (!match) return 0;
-            return (parseInt(match[1] || "0") * 60) + parseInt(match[2] || "0");
-        };
+        const imageUrl = extractImages(recipeData);
 
         const prepTime = parseDuration(recipeData.prepTime);
         const cookTime = parseDuration(recipeData.cookTime);
@@ -165,7 +122,7 @@ async function run() {
     await ensureDemoUser();
 
     // Configuration for limits
-    const MAX_PAGES = 5;
+    const MAX_PAGES = 20;
     const PROCESSED_LINKS = new Set<string>();
 
     for (const [key, config] of Object.entries(SUPPORTED_SITES)) {

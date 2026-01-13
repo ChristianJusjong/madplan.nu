@@ -21,7 +21,7 @@ async function run() {
 
     const $ = cheerio.load(html);
 
-    const allLinks = $("a");
+    const allLinks = $("a.teaser__link");
     console.log(`Total 'a' tags: ${allLinks.length}`);
 
     // Print first 20 links to see structure

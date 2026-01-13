@@ -55,68 +55,72 @@ export default async function RecipesPage() {
                 {recipes.length > 0 ? (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         {recipes.map((recipe) => (
-                            <div key={recipe.id} className="bg-white rounded-2xl border border-zinc-100 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all group overflow-hidden flex flex-col h-full">
-                                <div className="p-6 flex-1">
-                                    <div className="flex items-start justify-between gap-4 mb-3">
-                                        <h3 className="text-lg font-bold text-zinc-900 leading-tight group-hover:text-emerald-700 transition-colors">
-                                            {recipe.title}
-                                        </h3>
-                                        {recipe.userId === userId && (
-                                            <form action={async () => {
-                                                "use server";
-                                                await deleteRecipe(recipe.id);
-                                            }}>
-                                                <button className="text-zinc-300 hover:text-red-500 transition-colors">
-                                                    <Trash2 className="w-4 h-4" />
-                                                </button>
-                                            </form>
-                                        )}
+                            <Link href={`/recipes/${recipe.id}`} key={recipe.id} className="block h-full group">
+                                <article className="bg-white rounded-2xl border border-zinc-100 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all group overflow-hidden flex flex-col h-full relative">
+                                    <div className="p-6 flex-1">
+                                        <div className="flex items-start justify-between gap-4 mb-3">
+                                            <h3 className="text-lg font-bold text-zinc-900 leading-tight group-hover:text-emerald-700 transition-colors">
+                                                {recipe.title}
+                                            </h3>
+                                            {recipe.userId === userId && (
+                                                <div className="relative z-10" onClick={(e) => e.preventDefault()}>
+                                                    <form action={async () => {
+                                                        "use server";
+                                                        await deleteRecipe(recipe.id);
+                                                    }}>
+                                                        <button className="text-zinc-300 hover:text-red-500 transition-colors p-1 hover:bg-red-50 rounded-full">
+                                                            <Trash2 className="w-4 h-4" />
+                                                        </button>
+                                                    </form>
+                                                </div>
+                                            )}
+                                        </div>
+
+                                        <div className="flex flex-wrap gap-2 mb-4">
+                                            {recipe.tags.slice(0, 3).map(tag => (
+                                                <span key={tag} className="px-2 py-1 bg-zinc-50 border border-zinc-100 rounded-md text-[10px] font-bold tracking-wider text-zinc-500 uppercase">
+                                                    {tag}
+                                                </span>
+                                            ))}
+                                        </div>
+
+                                        <div className="grid grid-cols-3 gap-2 py-3 border-t border-b border-zinc-50 mb-4">
+                                            <div className="flex flex-col items-center">
+                                                <Clock className="w-4 h-4 text-zinc-400 mb-1" />
+                                                <span className="text-xs font-semibold text-zinc-700">{recipe.prepTime || "-"}m</span>
+                                            </div>
+                                            <div className="flex flex-col items-center border-l border-zinc-50">
+                                                <Utensils className="w-4 h-4 text-zinc-400 mb-1" />
+                                                <span className="text-xs font-semibold text-zinc-700">{recipe.cookTime || "-"}m</span>
+                                            </div>
+                                            <div className="flex flex-col items-center border-l border-zinc-50">
+                                                <Users className="w-4 h-4 text-zinc-400 mb-1" />
+                                                <span className="text-xs font-semibold text-zinc-700">{recipe.servings}</span>
+                                            </div>
+                                        </div>
+
+                                        <div className="space-y-1">
+                                            {Array.isArray(recipe.instructions) ? (recipe.instructions as any[]).slice(0, 2).map((step, i) => (
+                                                <p key={i} className="text-sm text-zinc-500 line-clamp-1 pl-3 border-l-2 border-zinc-100">
+                                                    {step}
+                                                </p>
+                                            )) : (typeof recipe.instructions === 'string' ? (
+                                                <p className="text-sm text-zinc-500 line-clamp-2 pl-3 border-l-2 border-zinc-100">
+                                                    {recipe.instructions}
+                                                </p>
+                                            ) : null)}
+                                        </div>
                                     </div>
 
-                                    <div className="flex flex-wrap gap-2 mb-4">
-                                        {recipe.tags.slice(0, 3).map(tag => (
-                                            <span key={tag} className="px-2 py-1 bg-zinc-50 border border-zinc-100 rounded-md text-[10px] font-bold tracking-wider text-zinc-500 uppercase">
-                                                {tag}
+                                    {recipe.sourceUrl && (
+                                        <div className="bg-zinc-50 px-6 py-3 border-t border-zinc-100 flex justify-between items-center bg-zinc-50/50">
+                                            <span className="text-xs font-medium text-emerald-600 group-hover:text-emerald-700 flex items-center gap-1.5">
+                                                <LinkIcon className="w-3 h-3" /> Åbn original
                                             </span>
-                                        ))}
-                                    </div>
-
-                                    <div className="grid grid-cols-3 gap-2 py-3 border-t border-b border-zinc-50 mb-4">
-                                        <div className="flex flex-col items-center">
-                                            <Clock className="w-4 h-4 text-zinc-400 mb-1" />
-                                            <span className="text-xs font-semibold text-zinc-700">{recipe.prepTime || "-"}m</span>
                                         </div>
-                                        <div className="flex flex-col items-center border-l border-zinc-50">
-                                            <Utensils className="w-4 h-4 text-zinc-400 mb-1" />
-                                            <span className="text-xs font-semibold text-zinc-700">{recipe.cookTime || "-"}m</span>
-                                        </div>
-                                        <div className="flex flex-col items-center border-l border-zinc-50">
-                                            <Users className="w-4 h-4 text-zinc-400 mb-1" />
-                                            <span className="text-xs font-semibold text-zinc-700">{recipe.servings}</span>
-                                        </div>
-                                    </div>
-
-                                    <div className="space-y-1">
-                                        {Array.isArray(recipe.instructions) ? (recipe.instructions as any[]).slice(0, 2).map((step, i) => (
-                                            <p key={i} className="text-sm text-zinc-500 line-clamp-1 pl-3 border-l-2 border-zinc-100">
-                                                {step}
-                                            </p>
-                                        )) : (typeof recipe.instructions === 'string' ? (
-                                            <p className="text-sm text-zinc-500 line-clamp-2 pl-3 border-l-2 border-zinc-100">
-                                                {recipe.instructions}
-                                            </p>
-                                        ) : null)}
-                                    </div>
-                                </div>
-
-                                {recipe.sourceUrl && (
-                                    <div className="bg-zinc-50 px-6 py-3 border-t border-zinc-100 flex justify-between items-center bg-zinc-50/50">
-                                        <a href={recipe.sourceUrl} target="_blank" className="text-xs font-medium text-emerald-600 hover:text-emerald-700 flex items-center gap-1.5">
-                                            <LinkIcon className="w-3 h-3" /> Kilde
-                                        </a>
-                                    </div>
-                                )}
-                            </div>
+                                    )}
+                                </article>
+                            </Link>
                         ))}
                     </div>
                 ) : (

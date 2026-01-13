@@ -1,140 +1,123 @@
 import { SignInButton, SignedIn, SignedOut } from "@clerk/nextjs";
-import { ArrowRight, ChefHat, Sparkles, Zap, Leaf, CheckCircle2 } from "lucide-react";
+import { ArrowRight, ChefHat, Sparkles, Zap, Leaf, CheckCircle2, Star, TrendingUp } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
 export default function Home() {
   return (
-    <div className="bg-white min-h-screen font-sans selection:bg-emerald-100 selection:text-emerald-900">
-      {/* Navbar */}
-      <nav className="fixed top-0 w-full z-50 bg-white/80 backdrop-blur-md border-b border-gray-100">
-        <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <span className="text-xl font-bold tracking-tight text-gray-900">Madplan.nu</span>
-          </div>
-          <div className="flex items-center gap-6">
-            <SignedIn>
-              <Link href="/dashboard" className="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors">Min Madplan</Link>
-            </SignedIn>
-            <SignedOut>
-              <SignInButton mode="modal">
-                <button className="text-sm font-medium text-gray-600 hover:text-gray-900 transition-colors">Log Ind</button>
-              </SignInButton>
-              <SignInButton mode="modal">
-                <button className="bg-gray-900 text-white px-4 py-2 rounded-full text-sm font-medium hover:bg-gray-800 transition-all shadow-lg shadow-gray-200">
-                  Kom I Gang
-                </button>
-              </SignInButton>
-            </SignedOut>
-          </div>
-        </div>
-      </nav>
+    <div className="relative min-h-[calc(100vh-4rem)] flex flex-col items-center justify-center overflow-hidden">
 
       {/* Hero Section */}
-      <section className="pt-32 pb-20 px-6">
-        <div className="max-w-4xl mx-auto text-center space-y-8">
-          <div className="inline-flex items-center gap-2 px-3 py-1 bg-emerald-50 border border-emerald-100 rounded-full text-emerald-700 text-xs font-bold uppercase tracking-wider animate-fade-in-up">
-            <Sparkles className="w-3 h-3" />
-            <span>Nu med Gourmet AI</span>
-          </div>
+      <section className="relative z-10 w-full max-w-7xl mx-auto px-6 pt-20 pb-32 text-center">
 
-          <h1 className="text-5xl md:text-7xl font-bold text-gray-900 tracking-tight leading-[1.1]">
-            Din Personlige <span className="text-emerald-600">Madplanlægger</span>.
-            <br />
-            <span className="text-gray-400">Drevet af AI.</span>
-          </h1>
+        {/* Badge */}
+        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass mb-8 animate-fade-in-up border border-emerald-500/20 shadow-lg shadow-emerald-500/10">
+          <Sparkles className="w-4 h-4 text-emerald-500" />
+          <span className="text-sm font-semibold bg-clip-text text-transparent bg-gradient-to-r from-emerald-600 to-violet-600">
+            Nu med Gourmet AI 2.0
+          </span>
+        </div>
 
-          <p className="text-xl text-gray-500 max-w-2xl mx-auto leading-relaxed">
-            Slut med beslutningstræthed. Få en skræddersyet ugentlig madplan,
-            smart indkøbsliste og lækre opskrifter på sekunder.
-          </p>
+        {/* Headline */}
+        <h1 className="text-6xl md:text-8xl font-bold tracking-tight mb-8 leading-[1.1] animate-fade-in-up [animation-delay:100ms]">
+          Din Madplan.
+          <br />
+          <span className="text-gradient">Genopfundet.</span>
+        </h1>
 
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
-            <SignedOut>
-              <SignInButton mode="modal">
-                <button className="h-14 px-8 rounded-full bg-gray-900 text-white font-semibold text-lg hover:bg-gray-800 hover:scale-[1.02] active:scale-[0.98] transition-all shadow-xl shadow-gray-200 flex items-center gap-2">
-                  Prøv Gratis <ArrowRight className="w-5 h-5" />
-                </button>
-              </SignInButton>
-            </SignedOut>
-            <SignedIn>
-              <Link href="/dashboard">
-                <button className="h-14 px-8 rounded-full bg-emerald-600 text-white font-semibold text-lg hover:bg-emerald-700 hover:scale-[1.02] active:scale-[0.98] transition-all shadow-xl shadow-emerald-200 flex items-center gap-2">
-                  Gå til Madplan <ArrowRight className="w-5 h-5" />
-                </button>
-              </Link>
-            </SignedIn>
-          </div>
+        <p className="text-xl md:text-2xl text-gray-500 dark:text-gray-400 max-w-2xl mx-auto mb-12 leading-relaxed animate-fade-in-up [animation-delay:200ms]">
+          Slip for beslutningstræthed. Vi genererer skræddersyede ugeplaner
+          der skåner både planeten og din pengepung.
+        </p>
 
-          {/* Social Proof / Trust */}
-          <div className="pt-8 flex items-center justify-center gap-8 opacity-60 grayscale hover:grayscale-0 transition-all duration-500">
-            {/* Placeholder logos or trust indicators could go here */}
-            <div className="flex items-center gap-2 text-sm font-medium text-gray-500">
-              <CheckCircle2 className="w-4 h-4 text-emerald-500" /> Spar penge på indkøb
+        {/* CTA Buttons */}
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-4 animate-fade-in-up [animation-delay:300ms]">
+          <SignedOut>
+            <SignInButton mode="modal">
+              <button className="h-14 px-8 rounded-full bg-emerald-600 text-white font-semibold text-lg hover:bg-emerald-500 hover:scale-105 transition-all shadow-xl shadow-emerald-500/20 flex items-center gap-2">
+                Start Gratis <ArrowRight className="w-5 h-5" />
+              </button>
+            </SignInButton>
+          </SignedOut>
+          <SignedIn>
+            <Link href="/dashboard">
+              <button className="h-14 px-8 rounded-full bg-emerald-600 text-white font-semibold text-lg hover:bg-emerald-500 hover:scale-105 transition-all shadow-xl shadow-emerald-500/20 flex items-center gap-2">
+                Åbn Madplan <ArrowRight className="w-5 h-5" />
+              </button>
+            </Link>
+          </SignedIn>
+
+          <button className="h-14 px-8 rounded-full glass text-gray-700 dark:text-gray-200 font-semibold text-lg hover:bg-white/50 dark:hover:bg-white/10 transition-all flex items-center gap-2">
+            Se hvordan det virker
+          </button>
+        </div>
+
+        {/* Floating Cards (Decorative) */}
+        <div className="absolute top-1/2 left-10 hidden lg:block animate-float [animation-delay:1000ms]">
+          <div className="glass-card p-4 rounded-2xl flex items-center gap-3 transform -rotate-6 max-w-xs">
+            <div className="w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center">
+              <span className="text-xl">🥕</span>
             </div>
-            <div className="flex items-center gap-2 text-sm font-medium text-gray-500">
-              <CheckCircle2 className="w-4 h-4 text-emerald-500" /> Mindre madspild
-            </div>
-            <div className="flex items-center gap-2 text-sm font-medium text-gray-500">
-              <CheckCircle2 className="w-4 h-4 text-emerald-500" /> Sundere livsstil
+            <div>
+              <p className="font-bold text-sm">Mindre Madspild</p>
+              <p className="text-xs text-gray-500">Spar 2.500 kr/år</p>
             </div>
           </div>
+        </div>
+
+        <div className="absolute top-1/3 right-10 hidden lg:block animate-float [animation-delay:2000ms]">
+          <div className="glass-card p-4 rounded-2xl flex items-center gap-3 transform rotate-6 max-w-xs">
+            <div className="w-10 h-10 rounded-full bg-emerald-100 flex items-center justify-center">
+              <span className="text-xl">🥗</span>
+            </div>
+            <div>
+              <p className="font-bold text-sm">Sund Livsstil</p>
+              <p className="text-xs text-gray-500">Nå dine mål nemmere</p>
+            </div>
+          </div>
+        </div>
+
+      </section>
+
+      {/* Feature Grid */}
+      <section className="w-full max-w-7xl mx-auto px-6 py-20">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <FeatureCard
+            icon={<ChefHat className="w-8 h-8 text-emerald-500" />}
+            title="AI Chef"
+            description="Personlige opskrifter baseret på dine smagspræferencer og mål."
+            delay={100}
+          />
+          <FeatureCard
+            icon={<Zap className="w-8 h-8 text-violet-500" />}
+            title="Lynhurtigt"
+            description="Generer en komplet ugeplan og indkøbsliste på under 5 sekunder."
+            delay={200}
+          />
+          <FeatureCard
+            icon={<TrendingUp className="w-8 h-8 text-blue-500" />}
+            title="Spar Penge"
+            description="Vi optimerer indkøb for at minimere omkostninger og madspild."
+            delay={300}
+          />
         </div>
       </section>
 
-      {/* Bento Grid Features */}
-      <section className="py-20 px-6 bg-gray-50/50">
-        <div className="max-w-6xl mx-auto">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-
-            {/* Card 1 */}
-            <BentoCard
-              icon={<ChefHat className="w-6 h-6 text-emerald-600" />}
-              title="Gourmet Opskrifter"
-              description="Vores AI kok skaber spændende, varierede retter baseret på dine præferencer. Aldrig mere kedelig hverdagsmad."
-            />
-
-            {/* Card 2 */}
-            <BentoCard
-              icon={<Zap className="w-6 h-6 text-amber-500" />}
-              title="Lynhurtig Planlægning"
-              description="Generer en hel uges madplan med ét klik. Tilpas nemt dage, erstat måltider og skalér opskrifter."
-            />
-
-            {/* Card 3 */}
-            <BentoCard
-              icon={<Leaf className="w-6 h-6 text-green-500" />}
-              title="Mindre Madspild"
-              description="Planlæg smart med rester og udnyt dine råvarer bedre. Godt for miljøet og din pengepung."
-            />
-
-          </div>
-        </div>
-      </section>
-
-      {/* Footer */}
-      <footer className="bg-white border-t border-gray-100 py-12 px-6">
-        <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center text-gray-500 text-sm">
-          <p>© 2024 Madplan.nu. Alle rettigheder forbeholdes.</p>
-          <div className="flex gap-6 mt-4 md:mt-0">
-            <a href="#" className="hover:text-gray-900">Privatliv</a>
-            <a href="#" className="hover:text-gray-900">Vilkår</a>
-            <a href="#" className="hover:text-gray-900">Kontakt</a>
-          </div>
-        </div>
-      </footer>
     </div>
   );
 }
 
-function BentoCard({ icon, title, description }: { icon: React.ReactNode, title: string, description: string }) {
+function FeatureCard({ icon, title, description, delay }: { icon: React.ReactNode, title: string, description: string, delay: number }) {
   return (
-    <div className="bg-white p-8 rounded-3xl border border-gray-100 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
-      <div className="w-12 h-12 rounded-2xl bg-gray-50 flex items-center justify-center mb-6">
+    <div
+      className="glass-card p-8 rounded-3xl hover:-translate-y-2 transition-transform duration-500"
+      style={{ animationDelay: `${delay}ms` }}
+    >
+      <div className="w-16 h-16 rounded-2xl bg-white/50 dark:bg-white/5 flex items-center justify-center mb-6 shadow-sm">
         {icon}
       </div>
-      <h3 className="text-xl font-bold text-gray-900 mb-3">{title}</h3>
-      <p className="text-gray-500 leading-relaxed">
+      <h3 className="text-2xl font-bold mb-4">{title}</h3>
+      <p className="text-gray-500 dark:text-gray-400 leading-relaxed">
         {description}
       </p>
     </div>
