@@ -56,7 +56,7 @@ export default function RootLayout({
             <div className="absolute bottom-[-10%] left-[20%] w-[40%] h-[40%] rounded-full bg-blue-400/10 blur-[120px]" />
           </div>
 
-          <header className="fixed top-0 w-full z-50 glass border-b-0">
+          <header className="fixed top-0 w-full z-50 glass shadow-sm transition-all duration-300">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
               <Link href="/" className="flex items-center gap-2 group">
                 <div className="bg-emerald-500/10 p-2 rounded-xl group-hover:bg-emerald-500/20 transition-colors">

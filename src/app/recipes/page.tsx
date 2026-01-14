@@ -10,7 +10,7 @@ export default async function RecipesPage() {
     return (
         <div className="min-h-screen bg-zinc-50 font-sans">
             {/* Header */}
-            <header className="bg-white border-b border-zinc-100 sticky top-0 z-10">
+            <header className="bg-white border-b border-zinc-100 sticky top-16 z-40 transition-all">
                 <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
                     <div className="flex items-center gap-4">
                         <Link href="/dashboard" className="p-2 text-zinc-400 hover:text-zinc-900 hover:bg-zinc-50 rounded-full transition-colors">

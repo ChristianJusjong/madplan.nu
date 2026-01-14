@@ -106,7 +106,7 @@ export default function ShoppingList({ items, planId, initialChecked = [], initi
     const totalEstimated = items.reduce((acc, i) => acc + (i.estimatedPrice || 0), 0);
 
     return (
-        <div className="glass-card rounded-3xl p-6 sticky top-24 max-h-[85vh] flex flex-col shadow-xl shadow-emerald-900/5">
+        <div className="glass-card rounded-3xl p-6 sticky top-24 max-h-[85vh] flex flex-col shadow-xl shadow-emerald-900/5 z-10">
             <div className="flex justify-between items-center mb-6 pb-4 border-b border-gray-100/50">
                 <div>
                     <h3 className="font-bold text-xl text-gray-900 flex items-center gap-2">
